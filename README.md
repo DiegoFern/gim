@@ -42,7 +42,7 @@ From the  graph:
 
 ![fib](images/a.png)
 
-The graph has multiple duplicated nodes for example (fib(3) is calculated multiples times).
+The graph has multiple duplicated nodes for example (fib(2) is calculated multiples times).
 
 So the program'll create a nodo for every calculation and represent it with a hash wich it depends of the function and commands used, for example:
 ```
