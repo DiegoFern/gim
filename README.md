@@ -161,7 +161,7 @@ gim -g -f svg -o /tmp/a.svg
 
 Which gives in /tmp/a.svg:
 
-![fib](images/b.png)
+![fib](images/b.svg)
 
  to cacluate:
 ```
@@ -176,7 +176,7 @@ If yo do again :
 gim -m master/fib.py -g -f svg -o /tmp/a.svg 
 ```
 gets:
-![fib2](images/c.png)
+![fib2](images/c.svg)
 
 where the calculate nodes are now green.
 
@@ -233,12 +233,7 @@ you can get a similar information:
       Out:.data/Out_4457731d94dab4585b12d93287660b59c5e52e5893f96d18b49ee6e5
       Is calculated:False
 
- * 7 : join the seven firsts numbers of fibonacci into a file
-      Use: 0;1;2;3;4;5;6
-      Args: 
-      Cmd: cat
-      Out:.data/Out_b270f3aca1b80457c83b1d0258a612b926ede43db5b7bd63b5427f10
-      Is calculated:False
+
 ```
 
 ## Commits e imports:
