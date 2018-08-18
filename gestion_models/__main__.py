@@ -173,6 +173,10 @@ def get_dot(out,format_dot,inp,browser,target
         out='/tmp/temp_dot'
     import sys
     D=compile_master(inp)
+    if target:
+        D={i:D[i] for i in D[target].get_children_names(target,D)}
+     
+
     for d in D.values():
         d.update_insert(D)
     for d in D.values():

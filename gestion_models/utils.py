@@ -1,9 +1,13 @@
 import itertools
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
-def eval_(x,Node=None,master=None):
+def eval_(x,Node=None,master=None,out=None,):
     t1=time.clock()
-    os.system((x))
+    ans=os.system((x))
+    ans=1
+    #if ans!=0:
+    #    os.remove(out)
+    #    raise Exception('error')
     t2=time.clock()
     return {'cmd':(x),'deltha_time':t2-t1,'Node':Node,'master':master,'time':datetime.datetime.now()}
 def md5(fname):
@@ -19,6 +23,7 @@ class Node:
         self.inputs_names=inputs[:]
         self.md5=None
         self.md5file=None
+        self.children_names=None
     def __repr__(self):
         return ('Node(%s)'%self.__dict__)
     def update_inputs(self,header) :
@@ -39,7 +44,9 @@ class Node:
         '''
         return set([self])|set().union(*(i.get_children() for i in self.inputs))
     def get_children_names(self,d,D):
-        return set([d])|set().union(*(D[i].get_children_names(i,D) for i in self.inputs_names))
+        if self.children_names is (None):
+            self.children_names=set([d])|set().union(*(D[i].get_children_names(i,D) for i in self.inputs_names))
+        return self.children_names
     
  
     def get_doc(self):
