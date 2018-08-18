@@ -48,10 +48,15 @@ def commit(target,name_commit,inp):
 
     tracks=[]
     with open('.commit/{}'.format(name_commit),'w') as f:
-        for node in target.get_children():
+        s=set()
+        for node in (target.get_children()):
             if isinstance(node,Node_bash):
                 continue
             g=str(node.getmd5file())[2:-1]
+            if g in s:
+                continue
+            s.add(g)
+            
             if not os.path.isfile('.savefiles/'+g):
                 node.save_file('.savefiles/'+g)
             print(node.track_savefile(g),file=f)

@@ -97,9 +97,11 @@ class Node:
         return '{}|{}'.format(self.file,g)
 
 class Node_bash(Node):
+
     def __init__(self,**args):
         super().__init__(**args)
         self.cmd=args['cmd']
+
     def calculate(self):
         if os.path.isfile('.data/%s'%self.md5):
             return
@@ -122,6 +124,7 @@ class Node_bash(Node):
     #            
     #            ).encode('utf-8'))).hexdigest())
     #    return (self.md5)
+
     def getmd5s(self):
         if self.md5 is  None:
             self.md5='Out_%s'%((hashlib.sha224(str((self.cmd,
@@ -131,6 +134,7 @@ class Node_bash(Node):
                 
                 ).encode('utf-8'))).hexdigest())
         return (self.md5)
+
     def getdot(self,name):
         color='red'
         if os.path.isfile('.data/'+self.md5):
@@ -138,6 +142,7 @@ class Node_bash(Node):
         return '"{name}"[label=" node={name}\\ncmd={cmd} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
                 md5=self.md5,file=self.file,cmd=self.cmd,
                 name=name,args=repr(self.args),color=color)
+
     def get_doc(self):
         Use=[]
         Args=[]
@@ -152,33 +157,13 @@ class Node_bash(Node):
                '.data/'+self.getmd5s(),
                os.path.isfile('.data/'+self.getmd5s())
                )
+
 class Node_import(Node):
     def __init__(self,master,name_node_master):
         self.Graph=eval(open(master,'r'))
         node=self.Graph[name_node_master]
         self.node=node
-    def getdot(self,name):
-        pass
-    def get_children(self):
-        pass
-    def get_children_names(self,d,D):
-        pass
-    def get_doc(self):
-        pass
-    def getmd5file(self):
-        pass
-    def getmd5s(self):
-        pass
-    def update_insert(self,D):
-        pass
-    def start_time(self):
-        pass
-    def calculate(self):
-        pass
-    def save_file(self,path):
-        pass
-    def track_savefile(self,g): 
-        pass
+
 def Grid(type,inputs,args,**kargs):
     Ans={}
     for i in itertools.product(*inputs):
@@ -186,6 +171,11 @@ def Grid(type,inputs,args,**kargs):
             I=i+j
             Ans['.'.join(map(str,I))]=type(inputs=i,args=j,**kargs)
     return Ans
+
+
+
+
+
 
 def append_head(x):
     if x:
