@@ -1,3 +1,4 @@
+from pprint import pprint
 import sys
 from utils import *
 from compile_master import compile_master 
@@ -26,6 +27,14 @@ def to_commit(name_commit,output):
         for l in f:
             print(l,file=f2,end='')
 
+def g(s):
+
+    s=s.replace('[','\\[')
+    s=s.replace(']','\\]')
+    s=s.replace("'","\\'")
+    s=s.replace("\"",r'''\"''')
+    s=s.replace(",","\\,")
+    return s
 def commit(target,name_commit,inp):
     '''
     create a commit of all files into getting a target
@@ -74,6 +83,34 @@ def logging(log,output):
         for i in open('.log'):
             f=eval(i).get
             print(*list(map(f,rows)),sep='\t',file=F)
+
+def read_log(log,target,output):
+    G={}
+    F={}
+    for i in open('.log','r'):
+        I=eval(i)
+        cmd=I['cmd'].split()
+        out=cmd[-1]
+        inputs=cmd[2:-2]
+        G[out]=(I,inputs)
+        F[out]=i
+        if out==target:
+            break
+    def get_nodes_rec(G,out):
+        A=[]
+        A.append(out)
+        try:
+            inputs=G[out]
+            inputs=inputs[1]
+        except:
+            return []
+        for Input in inputs:
+            A.extend(get_nodes_rec(G,Input))
+        return A
+    for i in get_nodes_rec(G,target):
+        print(F[i],end='')
+    #pprint({i:G[i] for i in get_nodes_rec(G,target)})
+
 def import_commit(name_commit,output):
     assert os.path.isfile(name_commit),'commit doesn\'t exists'
     print(name_commit)
@@ -194,7 +231,7 @@ def get_dot(out,format_dot,inp,browser,target
     for k,v in D.items():
         print(v.getdot(k),end='',file=f)
         for l in v.inputs_names:
-            print('"{}"->"{}"'.format(l,k),file=f)
+            print('"{}"->"{}"'.format(g(l),g(k)),file=f)
     print('}',file=f)
     try:
         f.close()
@@ -238,9 +275,10 @@ def parse(argv):
     parser.add_option('-d',dest='doc',action='store_true',default=False)
     parser.add_option('-i',dest='import_computes',default='',type=str)
     parser.add_option('-l',dest='log',default=0,type=int)
+    parser.add_option('-r',dest='read_log',default=None,type=str)
     return parser.parse_args(argv)
 
-def main(dot,init,import_commit_,log,commit_,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_):
+def main(dot,init,import_commit_,log,commit_,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
     if init:
         print(os.system('ls'))
         os.system('mkdir .data')
@@ -250,6 +288,9 @@ def main(dot,init,import_commit_,log,commit_,to_commit_,doc,target,master,output
     if to_commit_:
         to_commit(to_commit_,output)
         return  
+    if _read_log:
+        read_log(log,target,output)
+        return 
     if log:
         logging(log,output)
     if import_commit_:
@@ -279,7 +320,7 @@ def main(dot,init,import_commit_,log,commit_,to_commit_,doc,target,master,output
 if __name__=='__main__':
     import os
     args=(parse(sys.argv)[0])
-    kargs={'output':args.output,'target':args.target,
+    kargs={'output':args.output,'target':args.target,'_read_log':args.read_log,
             'dot':args.dot,'_get_dir':args._get_dir,'import_commit_':args.import_commit,
             'browser':args.browser,'master':args.master,
             'format_dot':args.format_dot,'commit_':args.commit,'init':args.init ,'to_commit_':args.to_commit_,'doc':args.doc,

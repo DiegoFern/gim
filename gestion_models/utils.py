@@ -14,6 +14,14 @@ def md5(fname):
     hash_md5 = subprocess.check_output(['md5sum', fname]).split()[0]
     return (hash_md5)
 
+def g(s):
+    s=s.replace('[','\\[')
+    s=s.replace(']','\\]')
+    s=s.replace("'","\\'")
+    s=s.replace("\"",r'''\"''')
+    s=s.replace(",","\\,")
+    return s
+        
 class Node:
     def __init__(self,File='',inputs=[],args=[],doc='',**kargs):
         self.file=File
@@ -34,10 +42,11 @@ class Node:
         color='red'
         if os.path.isfile('.data/'+self.md5):
             color='green'
-        return '\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
-                md5=self.md5,file=self.file,
-                name=name,args=repr(self.args),color=color)
-    
+        s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
+                md5=self.md5,file=g(self.file),
+                name=g(name),args=g(repr(self.args)),color=color)
+        return s
+ 
     def get_children(self):
         '''
         get all the nodes wich are need to calculate this Node
@@ -146,10 +155,10 @@ class Node_bash(Node):
         color='red'
         if os.path.isfile('.data/'+self.md5):
             color='green'
-        return '"{name}"[label=" node={name}\\ncmd={cmd} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
+        s='"{name}"[label=" node={name}\\ncmd={cmd} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
                 md5=self.md5,file=self.file,cmd=self.cmd,
-                name=name,args=repr(self.args),color=color)
-
+                name=g(name),args=g(repr(self.args)),color=color)
+        return s
     def get_doc(self):
         Use=[]
         Args=[]
