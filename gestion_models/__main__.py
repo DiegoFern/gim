@@ -1,3 +1,4 @@
+import  re
 from pprint import pprint
 import sys
 from utils import *
@@ -27,14 +28,7 @@ def to_commit(name_commit,output):
         for l in f:
             print(l,file=f2,end='')
 
-def g(s):
-
-    s=s.replace('[','\\[')
-    s=s.replace(']','\\]')
-    s=s.replace("'","\\'")
-    s=s.replace("\"",r'''\"''')
-    s=s.replace(",","\\,")
-    return s
+g=re.escape
 def commit(target,name_commit,inp):
     '''
     create a commit of all files into getting a target

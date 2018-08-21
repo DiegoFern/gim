@@ -1,4 +1,4 @@
-import itertools
+import itertools,re
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
 def eval_(x,Node=None,master=None,out=None,):
@@ -14,14 +14,7 @@ def md5(fname):
     hash_md5 = subprocess.check_output(['md5sum', fname]).split()[0]
     return (hash_md5)
 
-def g(s):
-    s=s.replace('[','\\[')
-    s=s.replace(']','\\]')
-    s=s.replace("'","\\'")
-    s=s.replace("\"",r'''\"''')
-    s=s.replace(",","\\,")
-    return s
-        
+g=re.escape        
 class Node:
     def __init__(self,File='',inputs=[],args=[],doc='',**kargs):
         self.file=File
