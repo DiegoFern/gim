@@ -2,7 +2,7 @@ import itertools,re
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
 def eval_(x,Node=None,master=None,out=None,):
-    t1=time.clock()
+    t1=datetime.datetime.now()
     ans=1
     ans=os.system((x))
     
@@ -11,8 +11,8 @@ def eval_(x,Node=None,master=None,out=None,):
             os.remove(out)
         print(out)
         raise Exception('error '+x)
-    t2=time.clock()
-    return {'cmd':(x),'deltha_time':t2-t1,'Node':Node,'master':master,'time':datetime.datetime.now()}
+    t2=datetime.datetime.now()
+    return {'cmd':(x),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
 def md5(fname):
     hash_md5 = subprocess.check_output(['md5sum', fname]).split()[0]
     return (hash_md5)
