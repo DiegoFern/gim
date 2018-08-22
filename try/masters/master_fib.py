@@ -28,4 +28,5 @@
         '7':Node_bash(cmd='cat',inputs=['0','1','2','3','4','5','6'],
            doc=('join the seven firsts numbers of fibonacci into a file'
                 ),),
+        '-1':Node(File='codes/error.py',inputs=[]),
  }

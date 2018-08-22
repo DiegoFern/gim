@@ -9,6 +9,7 @@ def eval_(x,Node=None,master=None,out=None,):
     if ans!=0:
         if out:
             os.remove(out)
+        print(out)
         raise Exception('error '+x)
     t2=time.clock()
     return {'cmd':(x),'deltha_time':t2-t1,'Node':Node,'master':master,'time':datetime.datetime.now()}
@@ -100,7 +101,7 @@ class Node:
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(str,self.args))),
                 '.data/%s'%self.md5,
-                ),self.node,self.master),file=FILENOTES)
+                ),self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
         eval_('cp {} {}'.format(self.file,path))
 

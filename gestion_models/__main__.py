@@ -293,9 +293,18 @@ def main(dot,init,all_c,import_commit_,log,commit_,to_commit_,doc,target,master,
         import_commit(import_commit_,output)
         return 
     inp=open(master,'r').read()
+    
     if all_c:
+        if output is None:
+            output='/tmp/ksfdkjdfsmghdskjgksfd098yukpò'
+        if output is 'None':
+            output=None
         for i in list_nodes(inp):
-            print('gim -m {master} -t \'{i}\''.format(i=i,master=master)                  )
+
+            if (format_dot)!='bash':
+                compute(i,output,inp,master)
+            else:
+                print('gim -m {master} -t \'{i}\''.format(i=i,master=master)                  )
         return 
     if import_computes_:
         import_computes(inp,import_computes_)
