@@ -1,3 +1,5 @@
+import  re
+from pprint import pprint
 import sys
 from utils import *
 from compile_master import compile_master 
@@ -26,6 +28,7 @@ def to_commit(name_commit,output):
         for l in f:
             print(l,file=f2,end='')
 
+g=re.escape
 def commit(target,name_commit,inp):
     '''
     create a commit of all files into getting a target
@@ -48,10 +51,15 @@ def commit(target,name_commit,inp):
 
     tracks=[]
     with open('.commit/{}'.format(name_commit),'w') as f:
-        for node in target.get_children():
+        s=set()
+        for node in (target.get_children()):
             if isinstance(node,Node_bash):
                 continue
             g=str(node.getmd5file())[2:-1]
+            if g in s:
+                continue
+            s.add(g)
+            
             if not os.path.isfile('.savefiles/'+g):
                 node.save_file('.savefiles/'+g)
             print(node.track_savefile(g),file=f)
@@ -69,6 +77,34 @@ def logging(log,output):
         for i in open('.log'):
             f=eval(i).get
             print(*list(map(f,rows)),sep='\t',file=F)
+
+def read_log(log,target,output):
+    G={}
+    F={}
+    for i in open('.log','r'):
+        I=eval(i)
+        cmd=I['cmd'].split()
+        out=cmd[-1]
+        inputs=cmd[2:-2]
+        G[out]=(I,inputs)
+        F[out]=i
+        if out==target:
+            break
+    def get_nodes_rec(G,out):
+        A=[]
+        A.append(out)
+        try:
+            inputs=G[out]
+            inputs=inputs[1]
+        except:
+            return []
+        for Input in inputs:
+            A.extend(get_nodes_rec(G,Input))
+        return A
+    for i in get_nodes_rec(G,target):
+        print(F[i],end='')
+    #pprint({i:G[i] for i in get_nodes_rec(G,target)})
+
 def import_commit(name_commit,output):
     assert os.path.isfile(name_commit),'commit doesn\'t exists'
     print(name_commit)
@@ -115,7 +151,8 @@ def compute(target,out,inp,master_name):
         print(line,file=out,end='')
     if out:
         f.close()
-
+def list_nodes(inp):
+    return list(compile_master(inp) )
 def create_doc(inp,out,target):
     D=compile_master(inp)
 
@@ -168,6 +205,10 @@ def get_dot(out,format_dot,inp,browser,target
         out='/tmp/temp_dot'
     import sys
     D=compile_master(inp)
+    if target:
+        D={i:D[i] for i in D[target].get_children_names(target,D)}
+     
+
     for d in D.values():
         d.update_insert(D)
     for d in D.values():
@@ -185,7 +226,7 @@ def get_dot(out,format_dot,inp,browser,target
     for k,v in D.items():
         print(v.getdot(k),end='',file=f)
         for l in v.inputs_names:
-            print('"{}"->"{}"'.format(l,k),file=f)
+            print('"{}"->"{}"'.format(g(l),g(k)),file=f)
     print('}',file=f)
     try:
         f.close()
@@ -229,9 +270,11 @@ def parse(argv):
     parser.add_option('-d',dest='doc',action='store_true',default=False)
     parser.add_option('-i',dest='import_computes',default='',type=str)
     parser.add_option('-l',dest='log',default=0,type=int)
+    parser.add_option('-a',dest='all_c',action='store_true',default=False)
+    parser.add_option('-r',dest='read_log',default=None,type=str)
     return parser.parse_args(argv)
 
-def main(dot,init,import_commit_,log,commit_,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_):
+def main(dot,init,all_c,import_commit_,log,commit_,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
     if init:
         print(os.system('ls'))
         os.system('mkdir .data')
@@ -241,12 +284,19 @@ def main(dot,init,import_commit_,log,commit_,to_commit_,doc,target,master,output
     if to_commit_:
         to_commit(to_commit_,output)
         return  
+    if _read_log:
+        read_log(log,target,output)
+        return 
     if log:
         logging(log,output)
     if import_commit_:
         import_commit(import_commit_,output)
         return 
     inp=open(master,'r').read()
+    if all_c:
+        for i in list_nodes(inp):
+            print('gim -m {master} -t \'{i}\''.format(i=i,master=master)                  )
+        return 
     if import_computes_:
         import_computes(inp,import_computes_)
     if doc:
@@ -270,8 +320,8 @@ def main(dot,init,import_commit_,log,commit_,to_commit_,doc,target,master,output
 if __name__=='__main__':
     import os
     args=(parse(sys.argv)[0])
-    kargs={'output':args.output,'target':args.target,
-            'dot':args.dot,'_get_dir':args._get_dir,'import_commit_':args.import_commit,
+    kargs={'output':args.output,'target':args.target,'_read_log':args.read_log,
+            'dot':args.dot,'all_c':args.all_c,'_get_dir':args._get_dir,'import_commit_':args.import_commit,
             'browser':args.browser,'master':args.master,
             'format_dot':args.format_dot,'commit_':args.commit,'init':args.init ,'to_commit_':args.to_commit_,'doc':args.doc,
             'import_computes_':args.import_computes,'log':args.log}
