@@ -13,7 +13,7 @@
             doc=('insert the value of 3th fibbonacci '
                 'as the sum of the two previous numbers'
                 ),),
-        '4'  : Node(File='codes/sum.py',inputs=['2','3'],
+        '4'  : Node(File='codes/slow_sum.py',inputs=['2','3'],
             doc=('insert the value of 4th fibbonacci '
                 'as the sum of the two previous numbers'
                 ),),
@@ -28,5 +28,4 @@
         '7':Node_bash(cmd='cat',inputs=['0','1','2','3','4','5','6'],
            doc=('join the seven firsts numbers of fibonacci into a file'
                 ),),
-        '-1':Node(File='codes/error.py',inputs=[]),
  }
