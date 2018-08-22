@@ -1,11 +1,23 @@
 from utils import *
 from pprint import pprint
+class dict_rec(dict):
+    def __getitem__(self,b):
+        bc=b
+        cut=1
+        while not b in self and cut>0:
+            cut=b.find('.')
+            b=b[cut+1:]
+        if b:
+            return dict.__getitem__(self,b)
+        else:
+            raise Exception('non found {}'.format(bc))
+        
 def import_node(master):
     return eval(open(master).read())
 def  compile_master(text):
     G=eval(text)
     G=plain(G)
-    return G
+    return dict_rec(G)
 
 def plain(G,header=''):
     G2={}
