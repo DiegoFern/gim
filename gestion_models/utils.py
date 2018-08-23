@@ -104,7 +104,8 @@ class Node:
             print(eval_('python3 {}{}{} > {}'.format(
                 self.file,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
-                append_head(' '.join(map(repr,map(str,self.args)))),
+                append_head(' '.join(map(
+                    repr_,map(str,self.args)))),
                 '.calculating/%s'%self.md5,
                 ),self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
@@ -112,7 +113,11 @@ class Node:
 
     def track_savefile(self,g):
         return '{}|{}'.format(self.file,g)
-
+def repr_(s):
+    if s[0]=='-':
+        return s
+    else:
+        return repr(s)
 class Node_bash(Node):
 
     def __init__(self,**args):
@@ -129,7 +134,7 @@ class Node_bash(Node):
                 
                 self.cmd,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
-                append_head(' '.join(map(repr,map(str,self.args)))),
+                append_head(' '.join(map(repr_,map(str,self.args)))),
                 '.calculating/%s'%self.md5,
                 ),out='.data/%s'%self.md5)
     #def getmd5s(self):
