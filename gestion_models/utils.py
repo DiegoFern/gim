@@ -98,7 +98,7 @@ class Node:
             print(eval_('python3 {}{}{} > {}'.format(
                 self.file,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
-                append_head(' '.join(map(str,self.args))),
+                append_head(' '.join(map(repr,map(str,self.args)))),
                 '.data/%s'%self.md5,
                 ),self.node,self.master),file=FILENOTES)
     def save_file(self,path):
@@ -123,7 +123,7 @@ class Node_bash(Node):
                 
                 self.cmd,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
-                append_head(' '.join(map(str,self.args))),
+                append_head(' '.join(map(repr,map(str,self.args)))),
                 '.data/%s'%self.md5,
                 ))
     #def getmd5s(self):
