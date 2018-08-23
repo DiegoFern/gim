@@ -2,16 +2,18 @@ import itertools,re
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
 def eval_(x,Node=None,master=None,out=None,):
-    t1=time.clock()
+    t1=datetime.datetime.now()
     ans=1
     ans=os.system((x))
     
     if ans!=0:
+        print(x,out)
         if out:
-            os.remove(out)
+            os.remove(out.replace('.data','.calculating',))
         raise Exception('error '+x)
-    t2=time.clock()
-    return {'cmd':(x),'deltha_time':t2-t1,'Node':Node,'master':master,'time':datetime.datetime.now()}
+    t2=datetime.datetime.now()
+    os.rename(out.replace('.data','.calculating',),out,)
+    return {'cmd':(x),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
 def md5(fname):
     hash_md5 = subprocess.check_output(['md5sum', fname]).split()[0]
     return (hash_md5)
@@ -37,6 +39,10 @@ class Node:
         color='red'
         if os.path.isfile('.data/'+self.md5):
             color='green'
+        if os.path.isfile('.calculating/'+self.md5):
+            color='yellow'
+
+
         s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
                 md5=self.md5,file=g(self.file),
                 name=g(name),args=g(repr(self.args)),color=color)
@@ -99,8 +105,8 @@ class Node:
                 self.file,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(repr,map(str,self.args)))),
-                '.data/%s'%self.md5,
-                ),self.node,self.master),file=FILENOTES)
+                '.calculating/%s'%self.md5,
+                ),self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
         eval_('cp {} {}'.format(self.file,path))
 
@@ -124,8 +130,8 @@ class Node_bash(Node):
                 self.cmd,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(repr,map(str,self.args)))),
-                '.data/%s'%self.md5,
-                ))
+                '.calculating/%s'%self.md5,
+                ),out='.data/%s'%self.md5)
     #def getmd5s(self):
     #    if self.md5 is  None:
     #        self.md5='Out_%s'%((hashlib.sha224(str((md5(self.cmd),

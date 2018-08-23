@@ -128,7 +128,7 @@ def import_commit(name_commit,output):
         os.system('cp {} {}'.format(path+'.savefiles/'+file,'.savefiles/'+file))
     os.system('cp {} {}'.format(name_commit,output))
     
-def compute(target,out,inp,master_name):
+def compute(target,out,inp,master_name,quiet):
     import sys
 
     D=compile_master(inp)
@@ -147,10 +147,11 @@ def compute(target,out,inp,master_name):
         f=open(out,'w')
     else:
         f=None
-    for line in open('.data/'+target.md5):
-        print(line,file=out,end='')
-    if out:
-        f.close()
+    if not quiet:
+        for line in open('.data/'+target.md5):
+            print(line,file=f,end='')
+        if out:
+            f.close()
 def list_nodes(inp):
     return list(compile_master(inp) )
 def create_doc(inp,out,target):
@@ -262,6 +263,7 @@ def parse(argv):
     parser.add_option('--init',dest='init',action='store_true',default=False)
     parser.add_option('--gd',dest='_get_dir',action='store_true',default=False)
     parser.add_option('-o','--output',dest='output',type=str)
+    parser.add_option('-q','--quiet',dest='quiet',action='store_true',default=False)
     parser.add_option('-f','--format_dot',dest='format_dot',type=str,default='dot')
     parser.add_option('--tc','--to_commit',dest='to_commit_',type=str,default='')
     parser.add_option('-b','--browser',dest='browser',action='store_true',default=False)
@@ -274,12 +276,13 @@ def parse(argv):
     parser.add_option('-r',dest='read_log',default=None,type=str)
     return parser.parse_args(argv)
 
-def main(dot,init,all_c,import_commit_,log,commit_,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
+def main(dot,init,all_c,import_commit_,quiet,log,commit_,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
     if init:
         print(os.system('ls'))
         os.system('mkdir .data')
         os.system('mkdir masters')
         os.system('mkdir codes')
+        os.system('mkdir .calculating')
         return
     if to_commit_:
         to_commit(to_commit_,output)
@@ -293,9 +296,20 @@ def main(dot,init,all_c,import_commit_,log,commit_,to_commit_,doc,target,master,
         import_commit(import_commit_,output)
         return 
     inp=open(master,'r').read()
+    
     if all_c:
+        if output is None:
+            output='/tmp/ksfdkjdfsmghdskjgksfd098yukpò'
+        elif output is 'None':
+            output=None
+        else:
+            output=(output)
         for i in list_nodes(inp):
-            print('gim -m {master} -t \'{i}\''.format(i=i,master=master)                  )
+
+            if (format_dot)!='bash':
+                compute(i,output,inp,master,quiet)
+            else:
+                print('gim -m {master} -t \'{i}\''.format(i=i,master=master)                  )
         return 
     if import_computes_:
         import_computes(inp,import_computes_)
@@ -315,12 +329,13 @@ def main(dot,init,all_c,import_commit_,log,commit_,to_commit_,doc,target,master,
         get_dot(output,format_dot,inp,browser,target)
         return 
     if not commit_ and target:
-        compute(target,output,inp,master)
+        compute(target,output,inp,master,quiet)
     
 if __name__=='__main__':
     import os
     args=(parse(sys.argv)[0])
-    kargs={'output':args.output,'target':args.target,'_read_log':args.read_log,
+    kargs={'quiet':args.quiet,
+            'output':args.output,'target':args.target,'_read_log':args.read_log,
             'dot':args.dot,'all_c':args.all_c,'_get_dir':args._get_dir,'import_commit_':args.import_commit,
             'browser':args.browser,'master':args.master,
             'format_dot':args.format_dot,'commit_':args.commit,'init':args.init ,'to_commit_':args.to_commit_,'doc':args.doc,
