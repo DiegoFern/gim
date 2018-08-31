@@ -71,7 +71,7 @@ def logging(log,output):
     if output:
         output=open(output,'w')
     else:
-        output=None
+        output=sys.stdout
     with output as F:
         print(*rows,sep='\t',file=F)
         for i in open('.log'):
@@ -244,7 +244,7 @@ def get_dot(out,format_dot,inp,browser,target
 def parse(argv):
     from optparse import OptionParser
     usageStr = """
-    USAGE:      python intelligent_model2 < master [options] >out
+    USAGE:     gim -m master [options] 
     """
     parser = OptionParser(usageStr)
     #parser.add_option('-n', '--numGames', dest='numGames', type='int',
@@ -261,9 +261,14 @@ def parse(argv):
     parser.add_option('-m','--master',dest='master',type=str,default='',
             help='file with the computes\' instruccions ')
     parser.add_option('--init',dest='init',action='store_true',default=False)
-    parser.add_option('--gd',dest='_get_dir',action='store_true',default=False)
-    parser.add_option('-o','--output',dest='output',type=str)
-    parser.add_option('-q','--quiet',dest='quiet',action='store_true',default=False)
+    parser.add_option('--gd',dest='_get_dir',action='store_true',default=False,
+       
+            help='get directions of outs')
+    parser.add_option('-o','--output',dest='output',type=str,
+            help='ouput file, if default will be stdout'
+            )
+    parser.add_option('-q','--quiet',dest='quiet',action='store_true',default=False,
+            help='avoid the standart outputs')
     parser.add_option('-f','--format_dot',dest='format_dot',type=str,default='dot')
     parser.add_option('--tc','--to_commit',dest='to_commit_',type=str,default='')
     parser.add_option('-b','--browser',dest='browser',action='store_true',default=False)
@@ -271,9 +276,12 @@ def parse(argv):
     parser.add_option('--ic',dest='import_commit',type=str,default='')
     parser.add_option('-d',dest='doc',action='store_true',default=False)
     parser.add_option('-i',dest='import_computes',default='',type=str)
-    parser.add_option('-l',dest='log',default=0,type=int)
+    parser.add_option('-l',dest='log',default=0,type=int,
+            help='returns the log in csv format'
+            )
     parser.add_option('-a',dest='all_c',action='store_true',default=False)
-    parser.add_option('-r',dest='read_log',default=None,type=str)
+    parser.add_option('-r',dest='read_log',action='store_true',
+            help='output the log ')
     return parser.parse_args(argv)
 
 def main(dot,init,all_c,import_commit_,quiet,log,commit_,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
@@ -298,12 +306,6 @@ def main(dot,init,all_c,import_commit_,quiet,log,commit_,to_commit_,doc,target,m
     inp=open(master,'r').read()
     
     if all_c:
-        if output is None:
-            output='/tmp/ksfdkjdfsmghdskjgksfd098yukpò'
-        elif output is 'None':
-            output=None
-        else:
-            output=(output)
         for i in list_nodes(inp):
 
             if (format_dot)!='bash':
