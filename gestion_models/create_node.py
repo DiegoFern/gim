@@ -22,19 +22,22 @@ def parse(argv):
             help='output the log ')
     parser.add_option('-a',dest='args',type=str,default='[]',
             help='output the log ')
+    parser.add_option('-c',dest='cmd',type=str,default='',
+            help='output the log ')
     return parser.parse_args(argv)
 
 def execute():
     import sys
     args=parse(sys.argv)[0]
-    arg=(args.input).split(',') if len(args.input) else []
-    for a in arg:
+    inp=(args.input).split(',') if len(args.input) else []
+    arg=(args.args).split(',') if len(args.input) else []
+    for a in inp:
         
         assert all([os.path.isfile(args.output+'/'+a)]),args.output+'/'+a
     with open(args.output+'/'+args.name,'w') as f:
         print(args.type,end='(**',file=f)
-        print({'inputs':((args.input)),'file':args.file,
-            'args':arg
+        print({'inputs':((inp)),'file':args.file,
+            'args':arg,'cmd':args.cmd,
             },file=f)
         print(')',file=f)
 

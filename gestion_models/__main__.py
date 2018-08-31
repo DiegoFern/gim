@@ -155,8 +155,8 @@ def compute(target,out,inp,master_name,quiet):
 def list_nodes(inp):
     return list(compile_master(inp) )
 def create_doc(inp,out,target):
-    D=compile_master(inp)
-
+    #D=compile_master(inp)
+    D=eval(inp)
     if out is not None:
         out=open(out,'w')
     if target:
@@ -164,6 +164,7 @@ def create_doc(inp,out,target):
      
     for d,n in sorted(D.items(),key=lambda x:x[0]):
         n.update_insert(D)
+
     for d,n in sorted(D.items(),key=lambda x:x[0]):
      
         print(' * ',d,' : ',n.doc.replace('\n','\n    '),sep='',file=out)
@@ -258,8 +259,11 @@ def parse(argv):
     parser.add_option('-t','--target',dest='target',type=str,default='',
             help='put the node objetive to be calculated'
             )
+
     parser.add_option('-m','--master',dest='master',type=str,default='',
             help='file with the computes\' instruccions ')
+    parser.add_option('-M','--Master',dest='Master',type=str,default='',
+            help='folder with the computes\' instruccions ')
     parser.add_option('--init',dest='init',action='store_true',default=False)
     parser.add_option('--gd',dest='_get_dir',action='store_true',default=False,
        
@@ -284,7 +288,7 @@ def parse(argv):
             help='output the log ')
     return parser.parse_args(argv)
 
-def main(dot,init,all_c,import_commit_,quiet,log,commit_,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
+def main(dot,init,all_c,import_commit_,quiet,log,commit_,Master,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
     if init:
         print(os.system('ls'))
         os.system('mkdir .data')
@@ -303,8 +307,12 @@ def main(dot,init,all_c,import_commit_,quiet,log,commit_,to_commit_,doc,target,m
     if import_commit_:
         import_commit(import_commit_,output)
         return 
-    inp=open(master,'r').read()
-    
+    if not Master:
+        inp=open(master,'r').read()
+    else:
+        import create_master
+        inp=create_master.main(Master)
+        print(inp)
     if all_c:
         for i in list_nodes(inp):
 
@@ -341,5 +349,7 @@ if __name__=='__main__':
             'dot':args.dot,'all_c':args.all_c,'_get_dir':args._get_dir,'import_commit_':args.import_commit,
             'browser':args.browser,'master':args.master,
             'format_dot':args.format_dot,'commit_':args.commit,'init':args.init ,'to_commit_':args.to_commit_,'doc':args.doc,
-            'import_computes_':args.import_computes,'log':args.log}
+            'import_computes_':args.import_computes,'log':args.log,
+            'Master':args.Master
+            }
     main(**kargs)
