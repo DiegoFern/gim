@@ -20,7 +20,7 @@ def parse(argv):
             help='output the log ')
     parser.add_option('-i',dest='input',type=str,default='',
             help='output the log ')
-    parser.add_option('-a',dest='args',type=str,default='[]',
+    parser.add_option('-a',dest='args',type=str,default='',
             help='output the log ')
     parser.add_option('-c',dest='cmd',type=str,default='',
             help='output the log ')
@@ -29,14 +29,14 @@ def parse(argv):
 def execute():
     import sys
     args=parse(sys.argv)[0]
-    inp=(args.input).split(',') if len(args.input) else []
-    arg=(args.args).split(',') if len(args.input) else []
+    inp=(args.input).split(',') if len(args.input)>0 else []
+    arg=(args.args).split(',') if len(args.args)>0 else ''
     for a in inp:
         
         assert all([os.path.isfile(args.output+'/'+a)]),args.output+'/'+a
     with open(args.output+'/'+args.name,'w') as f:
         print(args.type,end='(**',file=f)
-        print({'inputs':((inp)),'file':args.file,
+        print({'inputs':((inp)),'File':args.file,
             'args':arg,'cmd':args.cmd,
             },file=f)
         print(')',file=f)

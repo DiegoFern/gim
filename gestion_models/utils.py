@@ -21,7 +21,7 @@ def md5(fname):
 g=re.escape        
 class Node:
     def __init__(self,File='',inputs=[],args=[],doc='',**kargs):
-        self.file=File
+        self.File=File
         self.doc=doc
         self.args=args
         self.inputs=inputs
@@ -30,7 +30,7 @@ class Node:
         self.md5file=None
         self.children_names=None
     def __repr__(self):
-        return ('Node(%s)'%self.__dict__)
+        return ('Node(**%s)'%self.__dict__)
     def update_inputs(self,header) :
         self.inputs=[header+'.'+i for i in self.inputs]
         self.inputs_names=self.inputs[:]
@@ -44,7 +44,7 @@ class Node:
 
 
         s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
-                md5=self.md5,file=g(self.file),
+                md5=self.md5,file=g(self.File),
                 name=g(name),args=g(repr(self.args)),color=color)
         return s
  
@@ -68,7 +68,7 @@ class Node:
         for i in self.args:
             Args.append(i)
         return ans.format(
-                self.file,
+                self.File,
                 ';'.join(Use),
                ';'.join(map(str,Args)),
                '.data/'+self.getmd5s(),
@@ -76,12 +76,12 @@ class Node:
                )
     def getmd5file(self):
         if self.md5file is None:
-            self.md5file=md5(self.file)
+            self.md5file=md5(self.File)
         return self.md5file
     
     def getmd5s(self):
         if self.md5 is  None:
-            self.md5='Out_%s'%((hashlib.sha224(str((md5(self.file),
+            self.md5='Out_%s'%((hashlib.sha224(str((md5(self.File),
                 str(tuple(map(lambda x:x.getmd5s(),self.inputs))),
                 str(tuple(map(str,self.args)))
                 )
@@ -102,19 +102,19 @@ class Node:
                 i.calculate()
             
             print(eval_('python3 {}{}{} > {}'.format(
-                self.file,
+                self.File,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(
                     repr_,map(str,self.args)))),
                 '.calculating/%s'%self.md5,
                 ),self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
-        eval_('cp {} {}'.format(self.file,path))
+        eval_('cp {} {}'.format(self.File,path))
 
     def track_savefile(self,g):
-        return '{}|{}'.format(self.file,g)
+        return '{}|{}'.format(self.File,g)
 def repr_(s):
-    if s[0]=='-':
+    if s and s[0]=='-':
         return s
     else:
         return repr(s)
@@ -162,7 +162,7 @@ class Node_bash(Node):
         if os.path.isfile('.data/'+self.md5):
             color='green'
         s='"{name}"[label=" node={name}\\ncmd={cmd} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
-                md5=self.md5,file=self.file,cmd=self.cmd,
+                md5=self.md5,file=self.File,cmd=self.cmd,
                 name=g(name),args=g(repr(self.args)),color=color)
         return s
     def get_doc(self):
