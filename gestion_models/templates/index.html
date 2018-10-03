@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Proyects</title>
+  </head>
+  <body>
+    <h1>Codes</h1>
+      <ul>
+      {%for c,code in codes%}
+          <li> {{c}}</li>
+          <pre><code>{{code}}</code> </pre>
+      {%endfor%}
+      </ul>
+      <h1>Masters</h1>
+      <ul>
+      {%for m,master in masters%}
+          <li> {{m}}</li>
+             {{master}}
+      {%endfor%}
+      </ul>
+  </body>
+</html>
