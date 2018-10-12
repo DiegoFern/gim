@@ -6,8 +6,8 @@
   <body>
     <h1>Codes</h1>
       <ul>
-      {%for c,code in codes%}
-          <li> {{c}}</li>
+      {%for c,code,l in codes%}
+      <li><a href={{l}}> {{c}} </a></li>
           <pre><code>{{code}}</code> </pre>
       {%endfor%}
       </ul>

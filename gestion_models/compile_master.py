@@ -14,10 +14,12 @@ class dict_rec(dict):
         
 def import_node(master):
     return eval(open(master).read())
+
 def  compile_master(text):
     G=eval(text)
     G=plain(G)
     return G
+
 class dict_with_levels(dict):
     def __getitem__(self,d):
         index=1
@@ -29,6 +31,7 @@ class dict_with_levels(dict):
             d=d[index+1:
                     ]
         raise Exception('Node not existent "{}"'.format(dcopy))
+
 def plain(G,header=''):
     G2=dict_with_levels()
     for a,b in G.items():
@@ -40,3 +43,11 @@ def plain(G,header=''):
         else:
             G2[a]=b
     return G2
+
+class Master:
+    def __init__(self,dic):
+        self.dic=dic
+    def get_buttons(self):
+        S=sorted_val(self.dic)
+        for s in S:
+            s.
