@@ -201,6 +201,7 @@ def get_dir(target,inp
 
 def get_dot(out,format_dot,inp,browser,target
         ):
+    print(inp)
     assert format_dot in ('dot','png','svg')
     if format_dot!='dot':
         out2=out
@@ -242,6 +243,9 @@ def get_dot(out,format_dot,inp,browser,target
         if browser:
             os.system('google-chrome {}'.format(out2))
 
+def run_server():
+    from app import run
+    run()
 def parse(argv):
     from optparse import OptionParser
     usageStr = """
@@ -254,6 +258,10 @@ def parse(argv):
     parser.add_option('-g','--dot',dest='dot',action='store_true',default=False,
             help=('draw a graph of the nodes and the uses and his args, if you fixed a target '
                 'the program will draw only the needed nodes. The command -f select the format ')
+            )
+
+    parser.add_option('-s','--server',action='store_true',default=False,
+            help='put server up'
             )
 
     parser.add_option('-t','--target',dest='target',type=str,default='',
@@ -288,7 +296,7 @@ def parse(argv):
             help='output the log ')
     return parser.parse_args(argv)
 
-def main(dot,init,all_c,import_commit_,quiet,log,commit_,Master,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
+def main(dot,init,all_c,import_commit_,server,quiet,log,commit_,Master,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
     if init:
         print(os.system('ls'))
         os.system('mkdir .data')
@@ -296,6 +304,8 @@ def main(dot,init,all_c,import_commit_,quiet,log,commit_,Master,to_commit_,doc,t
         os.system('mkdir codes')
         os.system('mkdir .calculating')
         return
+    if server:
+        run_server()
     if to_commit_:
         to_commit(to_commit_,output)
         return  
@@ -350,6 +360,6 @@ if __name__=='__main__':
             'browser':args.browser,'master':args.master,
             'format_dot':args.format_dot,'commit_':args.commit,'init':args.init ,'to_commit_':args.to_commit_,'doc':args.doc,
             'import_computes_':args.import_computes,'log':args.log,
-            'Master':args.Master
+            'Master':args.Master,'server':args.server
             }
     main(**kargs)
