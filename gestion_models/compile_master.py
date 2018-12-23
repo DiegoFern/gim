@@ -44,10 +44,10 @@ def plain(G,header=''):
             G2[a]=b
     return G2
 
-class Master:
-    def __init__(self,dic):
-        self.dic=dic
-    def get_buttons(self):
-        S=sorted_val(self.dic)
-        for s in S:
-            s.
+#class Master:
+#    def __init__(self,dic):
+#        self.dic=dic
+#    def get_buttons(self):
+#        S=sorted_val(self.dic)
+#        for s in S:
+#            s.
