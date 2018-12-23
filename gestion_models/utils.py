@@ -1,6 +1,7 @@
 import itertools,re
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
+
 def eval_(x,Node=None,master=None,out=None,):
     t1=datetime.datetime.now()
     ans=1
@@ -14,11 +15,28 @@ def eval_(x,Node=None,master=None,out=None,):
     t2=datetime.datetime.now()
     os.rename(out.replace('.data','.calculating',),out,)
     return {'cmd':(x),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
+
+
 def md5(fname):
     hash_md5 = subprocess.check_output(['md5sum', fname]).split()[0]
     return (hash_md5)
 
 g=re.escape        
+
+import csv
+def eval_query(con=None,query=None,out=None):
+    with open('.calculating/'+out, 'w' ) as csvfile:
+        c=con.cursor()
+        c.execute(query)
+        D = c.fetchall()
+        spam_writer = csv.writer(csvfile, delimiter=';',)
+        spam_writer.writerow([i[0] for i in c.description] )
+        for d in D:
+            spam_writer.writerow(d)
+        c.close()
+    os.rename('.calculating/'+out,'.data/'+out,)
+    return {}
+
 class Node:
     def __init__(self,File='',inputs=[],args=[],doc='',**kargs):
         self.File=File
@@ -41,8 +59,6 @@ class Node:
             color='green'
         if os.path.isfile('.calculating/'+self.md5):
             color='yellow'
-
-
         s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
                 md5=self.md5,file=g(self.File),
                 name=g(name),args=g(repr(self.args)),color=color)
@@ -53,6 +69,7 @@ class Node:
         get all the nodes wich are need to calculate this Node
         '''
         return set([self])|set().union(*(i.get_children() for i in self.inputs))
+
     def get_children_names(self,d,D):
         if self.children_names is (None):
             self.children_names=set([d])|set().union(*(D[i].get_children_names(i,D) for i in self.inputs_names))
@@ -88,6 +105,7 @@ class Node:
                 
                 ).encode('utf-8'))).hexdigest())
         return (self.md5)
+
     def update_insert(self,D):
         self.inputs=list(map(D.__getitem__,self.inputs))
 
@@ -113,11 +131,15 @@ class Node:
 
     def track_savefile(self,g):
         return '{}|{}'.format(self.File,g)
+
+
 def repr_(s):
     if s and s[0]=='-':
         return s
     else:
         return repr(s)
+
+
 class Node_bash(Node):
 
     def __init__(self,**args):
@@ -179,12 +201,69 @@ class Node_bash(Node):
                '.data/'+self.getmd5s(),
                os.path.isfile('.data/'+self.getmd5s())
                )
+import sqlite3 as conexion
+
+class Query(Node):
+    CON={}
+    def __init__(self,query='',con='',data_con={},doc='',**kargs):
+        self.Query=query
+        self.md5=None
+        self.md5file=None
+        self.inputs_names=[]
+        self.children_names=None
+        self.inputs=[]
+        if con not in self.CON:
+            self.CON[con]=conexion.connect(**data_con)
+        self.args=[]
+        self.doc=doc
+        self.con=con
+        self.File=query#Query is seen like the code in herence context of a Node
+    
+    def __repr__(self):
+        return ('Node(**%s)'%self.__dict__)
+
+    def getmd5s(self):
+        if self.md5 is  None:
+            self.md5='Out_%s'%((hashlib.sha224(str((self.Query,
+                str(tuple(map(lambda x:x.getmd5s(),self.inputs))),
+                str(tuple(map(str,self.args)))
+                )
+                
+                ).encode('utf-8'))).hexdigest())
+        return (self.md5)
+
+    
+    def calculate(self):
+        if os.path.isfile('.data/%s'%self.md5):
+            return
+        else:
+            for i in self.inputs:
+                i.calculate()
+            
+            print(eval_query(
+               con = self.CON[self.con],
+               query = self.Query,
+               out= self.md5
+                ),file=FILENOTES)
+    def getdot(self,name):
+        color='red'
+        if os.path.isfile('.data/'+self.md5):
+            color='green'
+        if os.path.isfile('.calculating/'+self.md5):
+            color='yellow'
+        s='\n"{name}"[label=" node={name}\\nquery={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
+                md5=self.md5,file=g(self.File),
+                name=g(name),args=g(repr(self.args)),color=color)
+        return s
+ 
+
 
 class Node_import(Node):
     def __init__(self,master,name_node_master):
         self.Graph=eval(open(master,'r'))
         node=self.Graph[name_node_master]
         self.node=node
+
 
 def Grid(type,inputs,args,**kargs):
     Ans={}
