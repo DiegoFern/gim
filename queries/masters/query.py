@@ -11,7 +11,7 @@
         "2":Node(
             File="codes/join.py",
             inputs=["1","1"],
-            args=[]
+            args=['fname','fname']
             ),
         "3":Node(
             File="codes/filter.py",
