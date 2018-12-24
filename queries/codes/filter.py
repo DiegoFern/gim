@@ -1,10 +1,10 @@
 import csv
 import sys
 
-It=iter(csv.reader(open(sys.argv[1],'r'), delimiter=';'))
+It=iter(csv.reader(open(sys.argv[1],'r'), delimiter=';', lineterminator='\n'))
 l =next(It)
 header = list(map(str,l))
-w=csv.writer(sys.stdout, delimiter=';')
+w=csv.writer(sys.stdout, delimiter=';', lineterminator='\n')
 
 cond = ' '.join(sys.argv[2:])
 

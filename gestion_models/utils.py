@@ -18,6 +18,11 @@ def eval_(x,Node=None,master=None,out=None,):
 
 
 def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
     hash_md5 = subprocess.check_output(['md5sum', fname]).split()[0]
     return (hash_md5)
 
@@ -29,7 +34,7 @@ def eval_query(con=None,query=None,out=None):
         c=con.cursor()
         c.execute(query)
         D = c.fetchall()
-        spam_writer = csv.writer(csvfile, delimiter=';',)
+        spam_writer = csv.writer(csvfile, delimiter=';', lineterminator='\n')
         spam_writer.writerow([i[0] for i in c.description] )
         for d in D:
             spam_writer.writerow(d)
@@ -119,7 +124,7 @@ class Node:
             for i in self.inputs:
                 i.calculate()
             
-            print(eval_('python3 {}{}{} > {}'.format(
+            print(eval_('python {}{}{} > {}'.format(
                 self.File,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(
@@ -137,7 +142,7 @@ def repr_(s):
     if s and s[0]=='-':
         return s
     else:
-        return repr(s)
+        return str(s)
 
 
 class Node_bash(Node):
