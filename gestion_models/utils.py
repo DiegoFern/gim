@@ -124,7 +124,7 @@ class Node:
             for i in self.inputs:
                 i.calculate()
             
-            print(eval_('python {}{}{} > {}'.format(
+            print(eval_('python3 {}{}{} > {}'.format(
                 self.File,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(
@@ -206,11 +206,19 @@ class Node_bash(Node):
                '.data/'+self.getmd5s(),
                os.path.isfile('.data/'+self.getmd5s())
                )
-import sqlite3 as conexion
 
 class Query(Node):
     CON={}
-    def __init__(self,query='',con='',data_con={},doc='',**kargs):
+    def __init__(self,query='',con='',data_con={},doc='',
+            tipe='sqlite',**kargs):
+        assert tipe in ('sqlite',),'type of conexion not valid'
+        if tipe=='sqlite':
+            import sqlite3 as conexion
+        elif tipe=='oracle':
+            pass
+        elif tipe=='':
+            pass
+        
         self.Query=query
         self.md5=None
         self.md5file=None
