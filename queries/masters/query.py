@@ -6,7 +6,7 @@
         "1":Node(
             File="codes/filter.py",
             inputs=["0"],
-            args=["staff_number>=1"]
+            args=["'staff_number>=1'"]
             ),
         "2":Node(
             File="codes/join.py",
@@ -16,5 +16,5 @@
         "3":Node(
             File="codes/filter.py",
             inputs=["2"],
-            args=["staff_number_x>=1"]
+            args=["staff_number>1"]
             ),}

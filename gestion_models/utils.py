@@ -30,6 +30,8 @@ g=re.escape
 
 import csv
 def eval_query(con=None,query=None,out=None):
+
+    t1=datetime.datetime.now()
     with open('.calculating/'+out, 'w' ) as csvfile:
         c=con.cursor()
         c.execute(query)
@@ -40,7 +42,8 @@ def eval_query(con=None,query=None,out=None):
             spam_writer.writerow(d)
         c.close()
     os.rename('.calculating/'+out,'.data/'+out,)
-    return {}
+    t2=datetime.datetime.now()
+    return {'query':(query),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
 
 class Node:
     def __init__(self,File='',inputs=[],args=[],doc='',**kargs):
@@ -128,7 +131,7 @@ class Node:
                 self.File,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(
-                    repr_,map(str,self.args)))),
+                    repr_,map("'{}'".format,self.args)))),
                 '.calculating/%s'%self.md5,
                 ),self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
