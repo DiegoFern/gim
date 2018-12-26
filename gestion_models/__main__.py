@@ -240,6 +240,8 @@ def get_dot(out,format_dot,inp,browser,target
             ['dot','-T'+format_dot,'/tmp/temp_dot']+(
                 ['>',out2] if out2 else []
                 ))))
+    if browser:
+        os.system('google-chrome {}'.format(out2))
 
 def run_server():
     from app import run
