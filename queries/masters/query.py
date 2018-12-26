@@ -2,7 +2,15 @@
         "0":Query(
             con="conexion",
             data_con={'database':'company.db'},
-            query="SELECT * FROM employee"),
+            query="""SELECT * 
+            FROM employee
+            fdsd dfsda
+            dsafsd sadfsda
+            sadfsd sadfdsaf
+            sadfsdaf 
+            sdfdsfdsfsd sdfdsafsd
+            dsafsdfdsfdsfsd 
+            dasfdsfsdfsd sdafsdaf """),
         "1":Node(
             File="codes/filter.py",
             inputs=["0"],
