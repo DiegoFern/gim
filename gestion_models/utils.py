@@ -16,7 +16,6 @@ def eval_(x,Node=None,master=None,out=None,):
     os.rename(out.replace('.data','.calculating',),out,)
     return {'cmd':(x),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
 
-
 def md5(fname):
     hash_md5 = hashlib.md5()
     with open(fname, "rb") as f:
@@ -29,7 +28,7 @@ def md5(fname):
 g=re.escape        
 
 import csv
-def eval_query(con=None,query=None,out=None):
+def eval_query(con=None,query=None,out=None,master=None):
 
     t1=datetime.datetime.now()
     with open('.calculating/'+out, 'w' ) as csvfile:
@@ -126,12 +125,12 @@ class Node:
         else:
             for i in self.inputs:
                 i.calculate()
-            
-            print(eval_('python3 {}{}{} > {}'.format(
+            scape_unix=str if os.name == 'nt' else "'{}'".format
+            print(eval_('python {}{}{} > {}'.format(
                 self.File,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(
-                    repr_,map("'{}'".format,self.args)))),
+                    repr_,map(scape_unix,self.args)))),
                 '.calculating/%s'%self.md5,
                 ),self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
@@ -212,13 +211,20 @@ class Node_bash(Node):
 
 class Query(Node):
     CON={}
-    def __init__(self,query='',con='',data_con={},doc='',
+    def __init__(self,query='',con='',master=None,data_con={},doc='',
             tipe='sqlite',**kargs):
-        assert tipe in ('sqlite',),'type of conexion not valid'
+        assert tipe in ('sqlite','oracle'),'type of conexion not valid'
         if tipe=='sqlite':
             import sqlite3 as conexion
         elif tipe=='oracle':
-            pass
+            if con not in self.CON:
+                import jpype
+                import jaydebeapi as conexion
+    
+                from os.path import expanduser
+                classpath = expanduser("~\\Downloads\\ojdbc6.jar")
+                jpype.startJVM(jpype.getDefaultJVMPath(), "-Djava.class.path=%s" % classpath)
+            
         elif tipe=='':
             pass
         
