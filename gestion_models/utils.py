@@ -29,19 +29,22 @@ g=re.escape
 
 import csv
 def eval_query(con=None,query=None,out=None,master=None):
-
-    t1=datetime.datetime.now()
-    with open('.calculating/'+out, 'w' ) as csvfile:
-        c=con.cursor()
-        c.execute(query)
-        D = c.fetchall()
-        spam_writer = csv.writer(csvfile, delimiter=';', lineterminator='\n')
-        spam_writer.writerow([i[0] for i in c.description] )
-        for d in D:
-            spam_writer.writerow(d)
-        c.close()
-    os.rename('.calculating/'+out,'.data/'+out,)
-    t2=datetime.datetime.now()
+    try:
+        t1=datetime.datetime.now()
+        with open('.calculating/'+out, 'w' ) as csvfile:
+            c=con.cursor()
+            c.execute(query)
+            D = c.fetchall()
+            spam_writer = csv.writer(csvfile, delimiter=';', lineterminator='\n')
+            spam_writer.writerow([i[0] for i in c.description] )
+            for d in D:
+                spam_writer.writerow(d)
+            c.close()
+        os.rename('.calculating/'+out,'.data/'+out,)
+        t2=datetime.datetime.now()
+    except:
+        os.remove('.calculating/'+out,)
+        raise Exception('Failed query')
     return {'query':(query),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
 
 class Node:
