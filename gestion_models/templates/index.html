@@ -13,9 +13,17 @@
       </ul>
       <h1>Masters</h1>
       <ul>
-      {%for m,master in masters%}
-          <li> {{m}}</li>
-             {{master}}
+      {%for m,master,l,keys in masters%}
+        
+        <li> <a href={{l}}>{{m}}</a>             {{master}}
+             {{keys}}
+             <ul>
+             {%for k,c in keys%}
+             <li><a href={{c}}>{{k}}></a></li>
+             {%endfor%}
+             </ul>
+        </li>
+
       {%endfor%}
       </ul>
     <form method="POST"> 

@@ -1,9 +1,16 @@
+import subprocess    
 from flask import Flask,render_template
+from flask import send_file
 import os
 import sys 
 app=Flask(__name__)
 A='../try'
 A='.'
+
+def Node(*args,**kargs):
+    return 
+
+Query=Node=Node_bash=Node
 codes=[]
 for i in os.listdir(A+'/codes/'):
     text=open(A+'/codes/'+i,'r').read()
@@ -12,7 +19,11 @@ for i in os.listdir(A+'/codes/'):
 masters=[]
 for i in os.listdir(A+'/masters/'):
     text=open(A+'/masters/'+i,'r').read()
-    masters.append((i,text))
+    keys=list(map(lambda x:(x,'exec/{i}/{c}'.format(i=i,c=x)),
+        eval(text).keys()))
+
+    link='/codes/'+i
+    masters.append((i,text,link,keys))
 
 @app.route('/', )
 def index():
@@ -37,6 +48,13 @@ def code(name):
             file=name,
             text=text,
             path=name)
+
+@app.route('/exec/<master>/<t>')
+def execute(master,t):
+    print(*[os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+master,'-t',t],sep=' ')
+    out=(subprocess.run(['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+master,'-t',t,'-q'],  check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")
+    out=os.getcwd()+'/'+out
+    return send_file(out ,attachment_filename=out.split('/')[-1])
 
 def run():
     app.run()

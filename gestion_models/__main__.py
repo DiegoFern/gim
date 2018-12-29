@@ -152,6 +152,8 @@ def compute(target,out,inp,master_name,quiet):
             print(line,file=f,end='')
         if out:
             f.close()
+    else:
+        print('.data/'+target.md5,file=f,end='')
 def list_nodes(inp):
     return list(compile_master(inp) )
 def create_doc(inp,out,target):
