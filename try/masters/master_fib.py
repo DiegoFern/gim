@@ -22,10 +22,14 @@
                 'as the sum of the two previous numbers'
                 ),),
         '6'  : Node(File='codes/sum.py',inputs=['4','5'],
+            stdout=False,
            doc=('insert the value of 6th fibbonacci '
                 'as the sum of the two previous numbers'
                 ),),
         '7':Node_bash(cmd='cat',inputs=['0','1','2','3','4','5','6'],
            doc=('join the seven firsts numbers of fibonacci into a file'
                 ),),
+           'fib_7.xls':Node(File='codes/to_excel.py',inputs=['7'],
+               stdout=False
+               ),
  }

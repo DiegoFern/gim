@@ -153,7 +153,7 @@ def compute(target,out,inp,master_name,quiet):
         if out:
             f.close()
     else:
-        print('.data/'+target.md5,file=f,end='')
+        print('.data/'+target.md5,file=f,end='\n')
 def list_nodes(inp):
     return list(compile_master(inp) )
 def create_doc(inp,out,target):

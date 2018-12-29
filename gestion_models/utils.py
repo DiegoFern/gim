@@ -48,9 +48,15 @@ def eval_query(con=None,query=None,out=None,master=None):
     return {'query':(query),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
 
 class Node:
-    def __init__(self,File='',inputs=[],args=[],doc='',**kargs):
+    def __init__(self,File='',inputs=[],args=[],doc='',
+            stdout=True,
+            **kargs):
+        #if stdout=True its supossed that the command of the file
+        #has as output the last args (py imp1...imp_M a.py arg1 arg2 ...argn output
+        # in the other
         self.File=File
         self.doc=doc
+        self.stdout=stdout
         self.args=args
         self.inputs=inputs
         self.inputs_names=inputs[:]
@@ -129,12 +135,13 @@ class Node:
             for i in self.inputs:
                 i.calculate()
             scape_unix=str if os.name == 'nt' else "'{}'".format
-            print(eval_('python {}{}{} > {}'.format(
+            print(eval_('python3 {}{}{} {output}{}'.format(
                 self.File,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(
                     repr_,map(scape_unix,self.args)))),
                 '.calculating/%s'%self.md5,
+                output='> ' if self.stdout else '',
                 ),self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
         eval_('cp {} {}'.format(self.File,path))

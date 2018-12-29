@@ -52,9 +52,9 @@ def code(name):
 @app.route('/exec/<master>/<t>')
 def execute(master,t):
     print(*[os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+master,'-t',t],sep=' ')
-    out=(subprocess.run(['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+master,'-t',t,'-q'],  check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")
+    out=(subprocess.run(['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+master,'-t',t,'-q'],  check=True, stdout=subprocess.PIPE).stdout).decode("utf-8").strip()
     out=os.getcwd()+'/'+out
-    return send_file(out ,attachment_filename=out.split('/')[-1])
+    return send_file(out ,attachment_filename=t[-1])
 
 def run():
     app.run()
