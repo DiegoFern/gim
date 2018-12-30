@@ -1,4 +1,5 @@
 import subprocess    
+from itertools import chain
 from flask import Flask,render_template
 from flask import send_file
 import os
@@ -7,10 +8,20 @@ app=Flask(__name__)
 A='../try'
 A='.'
 
-def Node(*args,**kargs):
-    return 
+def union(*dicts):
+    return dict(chain.from_iterable(dct.items() for dct in dicts))
+class rep:
+    def __init__(self,name):
+        self.name=name
+    def __call__(self,*args,**kargs):
+        return '{}({})'.format(self.name,
+            ','.join(chain(map(str,args),(map(lambda x:'{}={}'.format(*x),
+                kargs.items())))))
 
-Query=Node=Node_bash=Node
+Query=rep('Query')
+Node=rep('Node')
+NodeR=rep('NodeR')
+Node_bash =rep('Node_bash') 
 codes=[]
 for i in os.listdir(A+'/codes/'):
     text=open(A+'/codes/'+i,'r').read()
@@ -19,8 +30,9 @@ for i in os.listdir(A+'/codes/'):
 masters=[]
 for i in os.listdir(A+'/masters/'):
     text=open(A+'/masters/'+i,'r').read()
-    keys=list(map(lambda x:(x,'exec/{i}/{c}'.format(i=i,c=x)),
-        eval(text).keys()))
+    keys=sorted(map(lambda x:(x[0],'exec/{i}/{c}'.format(i=i,c=x[0])
+        ,x[1]),
+        eval(text).items()),key=lambda x:x[0])
 
     link='/codes/'+i
     masters.append((i,text,link,keys))

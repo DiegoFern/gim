@@ -1,6 +1,8 @@
 import itertools,re
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
+def union(*dicts):
+    return dict(itertools.chain.from_iterable(dct.items() for dct in dicts))
 
 def eval_(x,Node=None,master=None,out=None,):
     t1=datetime.datetime.now()
@@ -128,6 +130,8 @@ class Node:
     def start_time(self):
         return #time_data('times',{'file':self.file,'inputs'})
     
+    CMD="python3"
+    
     def calculate(self):
         if os.path.isfile('.data/%s'%self.md5):
             return
@@ -135,19 +139,26 @@ class Node:
             for i in self.inputs:
                 i.calculate()
             scape_unix=str if os.name == 'nt' else "'{}'".format
-            print(eval_('python3 {}{}{} {output}{}'.format(
+            print(eval_('{CMD} {}{}{} {output}{}'.format(
                 self.File,
                 append_head(' '.join(map(lambda x:'.data/%s'%x.md5,self.inputs))),
                 append_head(' '.join(map(
                     repr_,map(scape_unix,self.args)))),
                 '.calculating/%s'%self.md5,
                 output='> ' if self.stdout else '',
-                ),self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
+
+                CMD=self.CMD
+                ),
+                
+                self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
         eval_('cp {} {}'.format(self.File,path))
 
     def track_savefile(self,g):
         return '{}|{}'.format(self.File,g)
+
+class NodeR(Node):
+    CMD="Rscript"
 
 
 def repr_(s):

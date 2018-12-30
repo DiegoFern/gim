@@ -15,20 +15,19 @@
       <ul>
       {%for m,master,l,keys in masters%}
         
-        <li> <a href={{l}}>{{m}}</a>             {{master}}
-             {{keys}}
-             <ul>
-             {%for k,c in keys%}
-             <li><a href={{c}}>{{k}}></a></li>
+        <li> <a href={{l}}>{{m}}</a>           
+            <ul>
+             {%for k,c,t in keys%}
+             <li><a href={{c}}>{{k}}</a>:{{t}}</li>
              {%endfor%}
              </ul>
         </li>
 
       {%endfor%}
       </ul>
-    <form method="POST"> 
+    <!--<form method="POST"> 
       <textarea name="textbox"></textarea>
       <button type="submit" name="submit">Submit</button>
-    </form>
+      </form>--!>
   </body>
 </html>
