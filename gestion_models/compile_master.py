@@ -17,7 +17,7 @@ def import_node(master):
 
 def  compile_master(text):
     G=eval(text)
-    G=plain(G)
+    #G=plain(G)
     return G
 
 class dict_with_levels(dict):

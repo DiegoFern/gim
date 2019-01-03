@@ -51,12 +51,13 @@ def eval_query(con=None,query=None,out=None,master=None):
 
 class Node:
     def __init__(self,File='',inputs=[],args=[],doc='',
-            stdout=True,
+            stdout=True,txt=False,
             **kargs):
         #if stdout=True its supossed that the command of the file
         #has as output the last args (py imp1...imp_M a.py arg1 arg2 ...argn output
         # in the other
         self.File=File
+        self.txt=txt
         self.doc=doc
         self.stdout=stdout
         self.args=args
@@ -160,7 +161,8 @@ class Node:
 class NodeR(Node):
     CMD="Rscript"
 
-
+class inp(Node):
+    pass
 def repr_(s):
     if s and s[0]=='-':
         return s

@@ -127,20 +127,32 @@ def import_commit(name_commit,output):
         print('cp {} {}'.format(path+'.savefiles/'+file,'.savefiles/'+file))
         os.system('cp {} {}'.format(path+'.savefiles/'+file,'.savefiles/'+file))
     os.system('cp {} {}'.format(name_commit,output))
-    
-def compute(target,out,inp,master_name,quiet):
-    import sys
 
+def get_md5(target,master_name,inp):
+    import sys
+    #
     D=compile_master(inp)
     for nn,d in D.items():
         d.update_insert(D)
         d.node=nn
         d.master=master_name
+    if target:
+        target=D[target]
+        print(target.getmd5s(),end=' ')
+        print('txt' if target.return_txt else '')
+    else:
+        print({node:v.getmd5s()
+
+        for (node,v) in D.items()})
+def compute(target,out,inp,master_name,quiet):
     import sys
-
+    #
+    D=compile_master(inp)
+    for nn,d in D.items():
+        d.update_insert(D)
+        d.node=nn
+        d.master=master_name
     target=D[target]
-
-
     target.getmd5s()
     target.calculate()
     if out is not None:
@@ -153,9 +165,11 @@ def compute(target,out,inp,master_name,quiet):
         if out:
             f.close()
     else:
-        print('.data/'+target.md5,file=f,end='\n')
+        print('.data/'+target.md5,' txt' if target.txt else '',file=f,sep='',end='\n')
+
 def list_nodes(inp):
     return list(compile_master(inp) )
+
 def create_doc(inp,out,target):
     #D=compile_master(inp)
     D=eval(inp)
@@ -274,6 +288,7 @@ def parse(argv):
             help='file with the computes\' instruccions ')
     parser.add_option('-M','--Master',dest='Master',type=str,default='',
             help='folder with the computes\' instruccions ')
+    parser.add_option('--md5',dest='md5',action='store_true',default=False)
     parser.add_option('--init',dest='init',action='store_true',default=False)
     parser.add_option('--gd',dest='_get_dir',action='store_true',default=False,
        
@@ -298,7 +313,7 @@ def parse(argv):
             help='output the log ')
     return parser.parse_args(argv)
 
-def main(dot,init,all_c,import_commit_,server,quiet,log,commit_,Master,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log):
+def main(dot,init,all_c,import_commit_,server,quiet,log,commit_,Master,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log,md5):
     if init:
         print(os.system('ls'))
         os.system('mkdir .data')
@@ -350,6 +365,9 @@ def main(dot,init,all_c,import_commit_,server,quiet,log,commit_,Master,to_commit
         #out,format_dot,inp,browser,target
         get_dot(output,format_dot,inp,browser,target)
         return 
+    if md5 :
+        get_md5(target,master,inp)
+        return 
     if not commit_ and target:
         compute(target,output,inp,master,quiet)
     
@@ -362,6 +380,7 @@ if __name__=='__main__':
             'browser':args.browser,'master':args.master,
             'format_dot':args.format_dot,'commit_':args.commit,'init':args.init ,'to_commit_':args.to_commit_,'doc':args.doc,
             'import_computes_':args.import_computes,'log':args.log,
-            'Master':args.Master,'server':args.server
+            'Master':args.Master,'server':args.server,
+            'md5':args.md5
             }
     main(**kargs)

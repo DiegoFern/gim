@@ -17,9 +17,20 @@
         
         <li> <a href={{l}}>{{m}}</a>           
             <ul>
-             {%for k,c,t in keys%}
-             <li><a href={{c}}>{{k}}</a>:{{t}}</li>
-             {%endfor%}
+
+                        <form method=post enctype=multipart/form-data>
+             {%for k,c,t,isinp,d in keys%}
+                 {%if isinp%}
+                     <li>{{k}}
+                            <input type=file name={{c}}>
+                            <input type=submit value="submit files">{{d}}
+                    </li>
+                 {%else%}
+                    <li><a href={{c}}>{{k}}</a>:{{t}}</li>
+                 {%endif%}
+            {%endfor%}
+
+                        </form>
              </ul>
         </li>
 
