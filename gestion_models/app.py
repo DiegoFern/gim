@@ -48,7 +48,7 @@ NODES={
 'Node':rep('Node'),
 'NodeR':rep('NodeR'),
 'Node_bash' :rep('Node_bash'),
-}
+'union':union}
 def pp(x,y):
     return x
 
