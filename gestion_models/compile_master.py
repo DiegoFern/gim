@@ -13,13 +13,13 @@ class dict_rec(dict):
             raise Exception('non found {}'.format(bc))
         
 def import_node(master):
-    return eval(open(master).read())
+    return eval(open(master).read(),NODES)
 
 def  compile_master(text):
-    G=eval(text)
+    G=eval(text,NODES)
     #G=plain(G)
     return G
-
+NODES
 class dict_with_levels(dict):
     def __getitem__(self,d):
         index=1

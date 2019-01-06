@@ -308,7 +308,13 @@ class Node_import(Node):
         self.Graph=eval(open(master,'r'))
         node=self.Graph[name_node_master]
         self.node=node
-
+NODES={ 'Node':Node,
+        'NodeR':NodeR,
+        'inp':inp,
+        'Node_bash':Node_bash,
+        'Query':Query,
+        'union':union
+    }
 
 def Grid(type,inputs,args,**kargs):
     Ans={}

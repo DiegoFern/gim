@@ -42,12 +42,13 @@ def get_date(x):
     except FileNotFoundError:
         return "not_found"
 
-
-inp=rep('inp')
-Query=rep('Query')
-Node=rep('Node')
-NodeR=rep('NodeR')
-Node_bash =rep('Node_bash') 
+NODES={
+'inp':rep('inp'),
+'Query':rep('Query'),
+'Node':rep('Node'),
+'NodeR':rep('NodeR'),
+'Node_bash' :rep('Node_bash'),
+}
 def pp(x,y):
     return x
 
@@ -62,7 +63,7 @@ def load():
     masters=[]
     def eval_secure(x):
         try:
-            return eval(x)
+            return eval(x,NODES)
         except:
             return {}
     for i in os.listdir(root +'/masters/'):
@@ -72,7 +73,7 @@ def load():
                 (subprocess.run(
                 ['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+i,'--md5'],
                 
-                check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")))
+                check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")),NODES)
         except:
             print('i failed',i)
             aux={}
@@ -127,7 +128,7 @@ def index():
                     (subprocess.run(
                     ['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+i,'--md5'],
                     
-                    check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")))
+                    check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")),NODES)
             except:
                 print('i failed',i)
                 aux={}
@@ -138,7 +139,7 @@ def index():
                     pp((x[1])[:3]=='inp',(x[1])[:3]=='inp'),
                 
 
-               get_date(aux[x[0]]) ),eval(text).items()) 
+               get_date(aux[x[0]]) ),eval(text,NODES).items()) 
                 
                 ,key=lambda x:x[0]
                     
