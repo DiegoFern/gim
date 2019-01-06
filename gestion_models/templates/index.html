@@ -5,17 +5,19 @@
   </head>
   <body>
     <h1>Codes</h1>
+    <a href=newcode>Make a new code file</a>
       <ul>
       {%for c,code,l in codes%}
-      <li><a href={{l}}> {{c}} </a></li>
+      <li><a href=/ed{{l}}> {{c}} </a></li>
           <pre><code>{{code}}</code> </pre>
       {%endfor%}
       </ul>
       <h1>Masters</h1>
+      <a href=newmaster>Make a new code master</a>
       <ul>
       {%for m,master,l,keys in masters%}
         
-        <li> <a href={{l}}>{{m}}</a>           
+        <li> <a href=/ed{{l}}>{{m}}</a>           
             <ul>
 
                         <form method=post enctype=multipart/form-data>
