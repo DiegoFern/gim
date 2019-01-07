@@ -217,7 +217,7 @@ def get_dir(target,inp
 
 def get_dot(out,format_dot,inp,browser,target
         ):
-    print(inp)
+    #print(inp)
     assert format_dot in ('dot','png','svg')
     if format_dot!='dot':
         out2=out

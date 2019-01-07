@@ -96,6 +96,25 @@ def load():
             
             ))
 load()
+
+def gim(l):
+    #eval the commnad "gim { l.split()}"
+    comand=['python3',os.path.dirname(os.path.abspath(__file__)),
+]+l.split()
+    print(*comand)
+    return (subprocess.run(comand,  check=True, stdout=subprocess.PIPE
+                    ).stdout).decode("utf-8")
+
+
+
+@app.route('/dot/<path:master>',methods =['GET','POST'] )
+def createdot(master):
+    code_dot = gim('-m {} -g -f svg'.format(master))
+    return '''<!DOCTYPE html> <html> <head> <title>HTML5 SVG demo</title> </head> <body>
+    '''+code_dot+''' </body> </html> '''
+
+
+
 @app.route('/',methods =['GET','POST'] )
 def index():
     global codes,masters
