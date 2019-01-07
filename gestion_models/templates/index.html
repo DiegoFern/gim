@@ -22,14 +22,17 @@
 
                         <form method=post enctype=multipart/form-data>
              {%for k,c,t,isinp,d in keys%}
-                 {%if isinp%}
+                 {%if isinp==1%}
                      <li>{{k}}
                             <input type=file name={{c}}>
-                            <input type=submit value="submit files">{{d}}
+                            <input type=submit value="submit files">{{d|safe}}
                     </li>
-                 {%else%}
-                    <li><a href={{c}}>{{k}}</a>:{{t}}</li>
+                 {%elif isinp==0%}
+                    <li><a href={{c}}>{{k}}</a>:{{t|safe}}</li>
+                 {%elif isinp==2%}
+                 <li>{{k}}:{{t|safe}}</li>
                  {%endif%}
+
             {%endfor%}
 
                         </form>

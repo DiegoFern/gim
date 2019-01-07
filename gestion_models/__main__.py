@@ -139,7 +139,6 @@ def get_md5(target,master_name,inp):
     if target:
         target=D[target]
         print(target.getmd5s(),end=' ')
-        print('txt' if target.return_txt else '')
     else:
         print({node:v.getmd5s()
 
@@ -165,7 +164,7 @@ def compute(target,out,inp,master_name,quiet):
         if out:
             f.close()
     else:
-        print('.data/'+target.md5,' txt' if target.txt else '',file=f,sep='',end='\n')
+        print('.data/'+target.md5,' txt' if hasattr(target,'txt') and target.txt else '',file=f,sep='',end='\n')
 
 def list_nodes(inp):
     return list(compile_master(inp) )

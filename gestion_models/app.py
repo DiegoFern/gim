@@ -64,8 +64,8 @@ def load():
     def eval_secure(x):
         try:
             return eval(x,NODES)
-        except:
-            return {}
+        except Exception as error:
+            return {'Compile_error':'''<div style="background-color:red" >{} </div>'''.format(error)}
     for i in os.listdir(root +'/masters/'):
         text=open(root +'/masters/'+i,'r').read()
         try:
@@ -74,17 +74,19 @@ def load():
                 ['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+i,'--md5'],
                 
                 check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")),NODES)
+            isinp=lambda x: int(x[:3]=='inp')
         except:
             print('i failed',i)
-            aux={}
+            aux={ 'fake':'dsafdsaf'}
+            isinp=lambda x:2
         keys=sorted(map(
             lambda x:(x[0],
                 'exec/{i}/{c}'.format(i=i,c=x[0]),
                 x[1],
-                ((x[1])[:3]=='inp'),
+                (isinp((x[1]))),
             
 
-           get_date(aux[x[0]]) ),eval_secure(text).items()) 
+           get_date(aux.get(x[0],'None')) ),eval_secure(text).items()) 
             
             ,key=lambda x:x[0]
                 
@@ -133,43 +135,6 @@ def index():
             nodes.append('<li>{}:({})>{}</li>'.format(node,master,out))
             out='.data/'+out
             File.save(out)
-        codes=[]
-        for i in os.listdir(root +'/codes/'):
-            text=open(root +'/codes/'+i,'r').read()
-            link='/codes/'+i
-            codes.append((i,text,link))
-        masters=[]
-
-        for i in os.listdir(root +'/masters/'):
-            text=open(root +'/masters/'+i,'r').read()
-            try:
-                aux = eval(( 
-                    (subprocess.run(
-                    ['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+i,'--md5'],
-                    
-                    check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")),NODES)
-            except:
-                print('i failed',i)
-                aux={}
-            keys=sorted(map(
-                lambda x:(x[0],
-                    'exec/{i}/{c}'.format(i=i,c=x[0]),
-                    x[1],
-                    pp((x[1])[:3]=='inp',(x[1])[:3]=='inp'),
-                
-
-               get_date(aux[x[0]]) ),eval(text,NODES).items()) 
-                
-                ,key=lambda x:x[0]
-                    
-                
-                )
-
-            link='/codes/'+i
-            masters.append((i,text,link,keys,
-                
-                ))
-
         return '''<h1>Updates:</h1>
         <ul>{}</ul>
         <a href='/'>back </a>'''.format(' '.join(nodes))
@@ -230,6 +195,7 @@ def reload():
     global masters,codes
     load()
     return redirect('/')
+
 @app.route('/exec/<master>/<t>')
 def execute(master,t):
     aux = ['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+master,'-t',t,'-q']
