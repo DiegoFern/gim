@@ -131,7 +131,7 @@ def index():
         for name_file,File in (iter(d)):
             
             _,master,node=name_file.split('/')
-            out=(subprocess.run(['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+master,'-t',node,'--md5'],  check=True, stdout=subprocess.PIPE).stdout).decode("utf-8").strip()
+            out=gim(['-m',os.getcwd()+'/masters/'+master,'-t',node,'--md5']).strip()
             nodes.append('<li>{}:({})>{}</li>'.format(node,master,out))
             out='.data/'+out
             File.save(out)
@@ -198,8 +198,8 @@ def reload():
 
 @app.route('/exec/<master>/<t>')
 def execute(master,t):
-    aux = ['python3',os.path.dirname(os.path.abspath(__file__)),'-m',os.getcwd()+'/masters/'+master,'-t',t,'-q']
-    out=(subprocess.run(aux,  check=True, stdout=subprocess.PIPE).stdout).decode("utf-8")
+    cmd = ['-m',os.getcwd()+'/masters/'+master,'-t',t,'-q']
+    out=gim(cmd)
     out=out.split()
     if len(out)>1:
         return open(os.getcwd()+'/'+out[0],'r').read()
