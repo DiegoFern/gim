@@ -300,8 +300,8 @@ def login():
 def editor(path=""):
     path = '/'.join(path.split('/'))
     key = request.cookies.get('key')
-    if not authenticate_key(key):
-        return render_template("login.html")
+    #if not authenticate_key(key):
+    #    return render_template("login.html")
 
     filepath = make_filepath(path)
 
