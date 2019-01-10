@@ -99,14 +99,16 @@ def load():
             ))
 load()
 
-def gim(l):
+def gim(l,quiet_error=False):
     #eval the commnad "gim { l.split()}"
     comand=['python3',os.path.dirname(os.path.abspath(__file__)),
 ]+(l.split() if type(l)==str else list(l))
     print(*comand)
-    return (subprocess.run(comand,  check=True, stdout=subprocess.PIPE
-                    ).stdout).decode("utf-8")
-
+    s = (subprocess.run(comand,  check=True, stderr=subprocess.PIPE,stdout=subprocess.PIPE if quiet_error else None 
+                    ))
+    if not quiet_error:
+        return s.stdout.decode("utf-8")
+    return s.stdout.decode("utf-8"),s.stderr.decode('utf8')
 
 
 @app.route('/dot/<path:master>',methods =['GET','POST'] )
@@ -199,11 +201,9 @@ def reload():
 @app.route('/exec/<master>/<t>')
 def execute(master,t):
     cmd = ['-m',os.getcwd()+'/masters/'+master,'-t',t,'-q']
-    try:
-        out=gim(cmd)
-    except Exception as e:
-        import traceback
-        return '<BR>'.join(traceback.format_tb(e.__traceback__))
+    out,err=gim(cmd,True)
+    if err:
+        return '<BR>'.join(err.split('\n'))
     #'''{}'''.format(exc.message if hasattr(exc,'message') else exc)
     out=out.split()
     if len(out)>1:
