@@ -10,3 +10,4 @@ if len(sys.argv)==4:
 else:
     print(l)
 
+raise Exception('woaladada')

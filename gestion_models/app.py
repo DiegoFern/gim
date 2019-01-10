@@ -104,7 +104,7 @@ def gim(l,quiet_error=False):
     comand=['python3',os.path.dirname(os.path.abspath(__file__)),
 ]+(l.split() if type(l)==str else list(l))
     print(*comand)
-    s = (subprocess.run(comand,  check=True, stderr=subprocess.PIPE,stdout=subprocess.PIPE if quiet_error else None 
+    s = (subprocess.run(comand,  check=not quiet_error, stderr=subprocess.PIPE,stdout=subprocess.PIPE if quiet_error else None 
                     ))
     if not quiet_error:
         return s.stdout.decode("utf-8")
@@ -203,7 +203,7 @@ def execute(master,t):
     cmd = ['-m',os.getcwd()+'/masters/'+master,'-t',t,'-q']
     out,err=gim(cmd,True)
     if err:
-        return '<BR>'.join(err.split('\n'))
+        return """<code><font color="red"> {}</font></code>""".format('\n'.join(err.split('\n')))
     #'''{}'''.format(exc.message if hasattr(exc,'message') else exc)
     out=out.split()
     if len(out)>1:
