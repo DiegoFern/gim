@@ -9,5 +9,3 @@ if len(sys.argv)==4:
     print(l,file=open(sys.argv[3],'w'))
 else:
     print(l)
-
-raise Exception('woaladada')
