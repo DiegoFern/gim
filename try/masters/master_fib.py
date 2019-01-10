@@ -2,7 +2,7 @@
     
     
    
-        '0'  : inp(File='codes/insert_number.py',inputs=[],args=[1],
+        '0'  : Node(File='codes/insert_number.py',inputs=[],args=[1],
             doc=('insert the value of 0th fibbonacci (1)')),
         '1'  : Node(File='codes/insert_number.py',inputs=[],args=[1],
             doc=('insert the value of 1th fibbonacci (1)')),
