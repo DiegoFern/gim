@@ -203,7 +203,7 @@ def execute(master,t):
     cmd = ['-m',os.getcwd()+'/masters/'+master,'-t',t,'-q']
     out,err=gim(cmd,True)
     if err:
-        return """<code><font color="red"> {}</font></code>""".format('\n'.join(err.split('\n')))
+        return """<pre><code><font color="red">{}</font></code></pre>""".format('\n'.join(err.split('\n')))
     #'''{}'''.format(exc.message if hasattr(exc,'message') else exc)
     out=out.split()
     if len(out)>1:
