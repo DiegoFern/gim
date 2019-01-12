@@ -104,19 +104,19 @@ def gim(l,quiet_error=False):
     comand=['python3',os.path.dirname(os.path.abspath(__file__)),
 ]+(l.split() if type(l)==str else list(l))
     print(*comand)
-    s = (subprocess.run(comand,  check=not quiet_error, stderr=subprocess.PIPE,stdout=subprocess.PIPE if quiet_error else None 
+    s = (subprocess.run(comand,  check=not quiet_error, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE if quiet_error else None 
                     ))
     if not quiet_error:
-        return s.stdout.decode("utf-8")
-    return s.stdout.decode("utf-8"),s.stderr.decode('utf8')
+        return '' if s.stdout is None else s.stdout.decode("utf-8")
+    return ('' if s.stdout is None else s.stdout.decode("utf-8"),
+            '' if s.stderr is None else s.stderr.decode('utf8'))
 
 
-@app.route('/dot/<path:master>',methods =['GET','POST'] )
-def createdot(master):
-    code_dot = gim('-m {} -g -f svg'.format(master))
-    return '''<!DOCTYPE html> <html> <head> <title>HTML5 SVG demo</title> </head> <body>
-    '''+code_dot+''' </body> </html> '''
-
+@app.route('/dot/<path:masters>',methods =['GET','POST'] )
+def createdot(masters):
+    code_dot = gim('-m {} -g -f dot'.format(masters),0)
+    return render_template('dot_read.html',graph= code_dot.replace('\"','\\\"').replace('\n','\\\n'))
 
 
 @app.route('/',methods =['GET','POST'] )
@@ -131,7 +131,6 @@ def index():
         d=request.files.items()
         nodes=[]
         for name_file,File in (iter(d)):
-            
             _,master,node=name_file.split('/')
             out=gim(['-m',os.getcwd()+'/masters/'+master,'-t',node,'--md5']).strip()
             nodes.append('<li>{}:({})>{}</li>'.format(node,master,out))

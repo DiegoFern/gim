@@ -78,7 +78,7 @@ class Node:
             color='green'
         if os.path.isfile('.calculating/'+self.md5):
             color='yellow'
-        s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
+        s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled];'.format(
                 md5=self.md5,file=g(self.File),
                 name=g(name),args=g(repr(self.args)),color=color)
         return s

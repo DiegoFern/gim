@@ -244,7 +244,7 @@ def get_dot(out,format_dot,inp,browser,target
     for k,v in D.items():
         print(v.getdot(k),end='',file=f)
         for l in v.inputs_names:
-            print('"{}"->"{}"'.format(g(l),g(k)),file=f)
+            print('"{}"->"{}";'.format(g(l),g(k)),file=f)
     print('}',file=f)
     try:
         f.close()
