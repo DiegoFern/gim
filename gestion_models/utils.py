@@ -78,8 +78,8 @@ class Node:
             color='green'
         if os.path.isfile('.calculating/'+self.md5):
             color='yellow'
-        s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled];'.format(
-                md5=self.md5,file=g(self.File),
+        s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" fillcolor = {color} href=\"{href}\" style=filled];'.format(
+                md5=self.md5,file=g(self.File),href='/ed/'+self.File,
                 name=g(name),args=g(repr(self.args)),color=color)
         return s
  
@@ -215,7 +215,10 @@ class Node_bash(Node):
             color='green'
         s='"{name}"[label=" node={name}\\ncmd={cmd} \\nfileOut={md5} \\n{args}" fillcolor = {color} style=filled]'.format(
                 md5=self.md5,file=self.File,cmd=self.cmd,
-                name=g(name),args=g(repr(self.args)),color=color)
+                name=g(name),args=g(repr(self.args)),color=color,
+                href='ed/'+self.File
+                
+                )
         return s
     def get_doc(self):
         Use=[]

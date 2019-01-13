@@ -7,10 +7,46 @@
     <script src="/static/node_modules/viz.js/viz.js"></script>
    </head>
   <body>
-
+    <button onclick="create_node()">Create_node</button>
+    <div id="graph">
+    </div>
   </body>
     <script>
-document.body.innerHTML += Viz("{{graph|safe}}", "svg");
+    var graph ="{{graph|safe}}".split(';');
+    graph.pop()
+    function update_graph(){
+        document.querySelector("#graph").innerHTML = Viz('digraph{'+graph.join('; ')+';}', "svg");
+    };
+
+    var _create_node=function (parents,
+                    file,
+                    name,
+                    args
+
+            ){
+        graph.push(`${name}[label=\"node=${name} \n file=${file}\nfileOut=0\n\\\[${args}\\\]\" fillcolor = red href=\"${file}\" style=filled ]`);
+        for (var i in parents){
+            graph.push(`${parents[i]}->${name}`);
+        };
+        return graph;
+        update_graph();
+    };        
+        
+    function create_node(){
+        var parents = eval(prompt("parents of node", ""));
+        
+        var file = prompt("File", "/codes/");
+        var name = prompt("name of node", "Harry Potter");
+        var args = eval(prompt("list of args", ""));
+        _create_node(parents,
+                    file,
+                    name,
+                    args);
+         update_graph(); 
+         };    
+        
+     update_graph(); 
+
     </script>
 </html>
 
