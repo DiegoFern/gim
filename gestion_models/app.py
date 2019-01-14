@@ -116,7 +116,7 @@ def gim(l,quiet_error=False):
 @app.route('/dot/<path:masters>',methods =['GET','POST'] )
 def createdot(masters):
     code_dot = gim('-m {} -g -f dot'.format(masters),0)
-    return render_template('dot_read.html',graph= code_dot.replace('\"','\\\"').replace('\n','').replace('digraph{','').replace('}',''))
+    return render_template('dot_read.html',graph= code_dot.replace('\"','\\\"').replace('\r','').replace('\n','').replace('digraph{','').replace('}',''))
 
 
 @app.route('/',methods =['GET','POST'] )
