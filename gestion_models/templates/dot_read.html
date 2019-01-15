@@ -15,9 +15,13 @@
 
     <script>
     var graph ="{{graph|safe}}".split(';');
-    graph.pop()
+    graph.pop();
+
+    var to_update =[];
     function update_graph(){
+        if (graph.length>0){
         document.querySelector("#graph").innerHTML = Viz('digraph{'+graph.join('; ')+';}', "svg");
+        };
     };
 
     var _create_node=function (parents,
