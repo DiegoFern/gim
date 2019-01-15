@@ -5,12 +5,14 @@
     <meta charset="utf-8">
     <title>Viz.js</title>
     <script src="/static/node_modules/viz.js/viz.js"></script>
-   </head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
   <body>
     <button onclick="create_node()">Create_node</button>
     <div id="graph">
     </div>
   </body>
+
     <script>
     var graph ="{{graph|safe}}".split(';');
     graph.pop()
@@ -42,11 +44,20 @@
                     file,
                     name,
                     args);
-         update_graph(); 
-         };    
-        
+        to_update.push(parents,
+                    file,
+                    name,
+                    args);
+        update_graph(); 
+
+        };    
      update_graph(); 
 
+    function updateGraphOnline(){
+        $.post("update_graph",
+             to_update);   
+      
+    }
     </script>
 </html>
 
