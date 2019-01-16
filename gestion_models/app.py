@@ -120,8 +120,15 @@ def patata():
 
 @app.route('/dot/<path:masters>',methods =['GET','POST'] )
 def createdot(masters):
-    code_dot = gim('-m {} -g -f dot'.format(masters),0)
-    return render_template('dot_read.html',graph= code_dot.replace('\"','\\\"').replace('\r','').replace('\n','').replace('digraph{','').replace('}',''))
+    if request.method == "GET":
+        code_dot = gim('-m {} -g -f dot'.format(masters),0)
+        return render_template('dot_read.html',graph= code_dot.replace('\"','\\\"').replace('\r','').replace('\n','').replace('digraph{','').replace('}',''))
+    else:
+        with open(os.getcwd()+masters,'a') as f:
+            for name,file, name, args in (request.form):
+                print('|{\n',name,':',Node(**{'File':File,'args':args}),'}',sep='',file=f,end='')
+
+        return 'done'
 
 
 @app.route('/',methods =['GET','POST'] )
