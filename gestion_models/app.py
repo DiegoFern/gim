@@ -181,7 +181,7 @@ def newmaster():
         i+=1
 
     f = open(os.path.join(os.getcwd(),'masters',file,), 'a')
-    print('{}',file=f)
+    print('acumulative_dict()',file=f)
     f.close(
             )
     return redirect('/reload')
