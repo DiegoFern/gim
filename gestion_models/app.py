@@ -117,11 +117,27 @@ def gim(l,quiet_error=False):
 def createdot(masters):
     if request.method == "GET":
         code_dot = gim('-m {} -g -f dot'.format(masters),0)
-        return render_template('dot_read.html',graph= code_dot.replace('\"','\\\"').replace('\r','').replace('\n','').replace('digraph{','').replace('}',''))
+        return render_template('dot_read.html',graph= code_dot.replace('\"','\\\"').replace('\r','').replace('\n','').replace('digraph{','').replace('}',''),master=masters)
     else:
-        with open(os.getcwd()+masters,'a') as f:
-            for name,file, name, args in (request.form):
-                print('|{\n',name,':',Node(**{'File':File,'args':args}),'}',sep='',file=f,end='')
+        print(os.getcwd()+'/'+masters)
+        if os.exists():
+            append_init=0
+        else:
+            append_init=1
+        with open(os.getcwd()+'/'+masters,'a') as f:
+            if append_init:
+                print('{}',file=File,end='')
+            print(request.form)
+            Form=list((map(request.form.getlist,('name[]',
+                'file[]','args[]'
+                ))))
+            print('------------')
+            print(Form)
+            for name,File, args in zip(*Form):
+                print('|{\n',name,':',"Node('File':{File},'args':{args})".format(
+                    File=File,args=args,name=name
+                    )
+                        ,'}',sep='',file=f,end='')
 
         return 'done'
 
