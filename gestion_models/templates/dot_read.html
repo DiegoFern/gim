@@ -16,7 +16,10 @@
     <script>
     var graph ="{{graph|safe}}".split(';');
     graph.pop();
-
+    var Parents=[];
+    var File=[];
+    var Name=[];
+    var Args=[];
     var to_update =[];
     function update_graph(){
         if (graph.length>0){
@@ -48,18 +51,23 @@
                     file,
                     name,
                     args);
-        to_update.push(parents,
-                    file,
-                    name,
-                    args);
+        Parents.push(parents);
+        File.push(file);
+        Name.push(name);
+        Args.push(args);
         update_graph(); 
 
         };    
      update_graph(); 
 
     function updateGraphOnline(){
-        $.post("update_graph",
-             to_update);   
+        $.post("{{master}}",
+                {parents:Parents,
+                 file:File,
+                 args: Args,
+                 name: Name
+                }
+                );   
       
     }
     </script>
