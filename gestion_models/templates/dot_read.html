@@ -33,9 +33,9 @@
                     args
 
             ){
-        graph.push(`${name}[label=\"node=${name} \n file=${file}\nfileOut=0\n\\\[${args}\\\]\" fillcolor = red href=\"${file}\" style=filled ]`);
+        graph.push(`\"${name}\"[label=\"node=${name} \n file=${file}\nfileOut=0\n\\\[${args}\\\]\" fillcolor = red href=\"${file}\" style=filled ]`);
         for (var i in parents){
-            graph.push(`${parents[i]}->${name}`);
+            graph.push(`\"${parents[i]}\"->\"${name}\"`);
         };
         return graph;
         update_graph();

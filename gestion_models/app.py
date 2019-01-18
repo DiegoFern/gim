@@ -113,6 +113,11 @@ def gim(l,quiet_error=False):
             '' if s.stderr is None else s.stderr.decode('utf8'))
 
 
+@app.route('/patata',methods =['GET','POST'] )
+def patata():
+    print(request.username)
+    return 1
+
 @app.route('/dot/<path:masters>',methods =['GET','POST'] )
 def createdot(masters):
     if request.method == "GET":
@@ -192,7 +197,7 @@ def newmaster():
         i+=1
 
     f = open(os.path.join(os.getcwd(),'masters',file,), 'a')
-    print('{}',file=f)
+    print('acumulative_dict()',file=f)
     f.close(
             )
     return redirect('/reload')

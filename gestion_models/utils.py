@@ -4,6 +4,11 @@ import hashlib,time,os,subprocess,datetime
 def union(*dicts):
     return dict(itertools.chain.from_iterable(dct.items() for dct in dicts))
 
+class acumulative_dict:
+    def __add__(self,other):
+        self.update(other)
+        return self
+
 def eval_(x,Node=None,master=None,out=None,):
     t1=datetime.datetime.now()
     ans=1
@@ -316,7 +321,8 @@ NODES={ 'Node':Node,
         'inp':inp,
         'Node_bash':Node_bash,
         'Query':Query,
-        'union':union
+        'union':union,
+        'acumulative_dict':acumulative_dict
     }
 
 def Grid(type,inputs,args,**kargs):
