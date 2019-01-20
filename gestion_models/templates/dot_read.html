@@ -9,11 +9,32 @@
   </head>
   <body>
     <button onclick="create_node()">Create_node</button>
+    <button onclick="updateGraphOnline()">submit graph</button>
+    <div id=''>
+        <form>
+            File:<select id='file' > </select>
+        </form>
+        <form >
+            Name node:<input id='name' type="text" name="Parents" value= '[]'></input>
+
+        </form>
+            <BR>
+            <form >
+            Parents (list)<input id='parents' type="text" name="Parents" value= '[]'></input>
+        </form>
+            <BR>
+            <form >
+            Args (list)<input id='args' type="text" name="Args" value= '[]'> </input>
+        </form>
+    </div>
+    
     <div id="graph">
     </div>
   </body>
 
     <script>
+    var files_names={{files_names|safe}};
+    document.querySelector("#file").innerHTML= files_names.map(x => `<option value=\"${x}\">${x}</option>`).join('\n')
     var graph ="{{graph|safe}}".split(';');
     graph.pop();
     var Parents=[];
@@ -41,24 +62,40 @@
         update_graph();
     };        
         
+    //function create_node(){
+    //    var parents = prompt("parents of node", "");
+    //    
+    //    var file = prompt("File", "/codes/");
+    //    var name = prompt("name of node", "Harry Potter");
+    //    var args = prompt("list of args", "");
+    //    _create_node(eval(parents),
+    //                file,
+    //                name,
+    //                eval(args));
+    //    Parents.push(parents);
+    //    File.push(file);
+    //    Name.push(name);
+    //    Args.push(args);
+    //    update_graph(); 
+
+    //    };    
     function create_node(){
-        var parents = eval(prompt("parents of node", ""));
+        var parents = document.getElementById("parents").value;
         
-        var file = prompt("File", "/codes/");
-        var name = prompt("name of node", "Harry Potter");
-        var args = eval(prompt("list of args", ""));
-        _create_node(parents,
+        var file = document.getElementById("file").value;
+        var name = document.getElementById("name").value; 
+        var args = document.getElementById("args").value;
+        _create_node(eval(parents),
                     file,
                     name,
-                    args);
+                    eval(args));
         Parents.push(parents);
         File.push(file);
         Name.push(name);
         Args.push(args);
         update_graph(); 
 
-        };    
-     update_graph(); 
+        };   update_graph(); 
 
     function updateGraphOnline(){
         $.post("{{master}}",
@@ -70,6 +107,7 @@
                 );   
       
     }
+    
     </script>
 </html>
 

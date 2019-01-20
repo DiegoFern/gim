@@ -3,6 +3,7 @@ import hashlib
 import config    
 import subprocess    
 from itertools import chain
+from utils import NODES
 from flask import Flask,render_template,flash, request, redirect, url_for, abort, make_response
 from werkzeug.utils import secure_filename
 import platform
@@ -43,6 +44,7 @@ def get_date(x):
         return "not_found"
 
 NODES={
+        'acumulative_dict':NODES['acumulative_dict'],
 'inp':rep('inp'),
 'Query':rep('Query'),
 'Node':rep('Node'),
@@ -122,24 +124,27 @@ def patata():
 def createdot(masters):
     if request.method == "GET":
         code_dot = gim('-m {} -g -f dot'.format(masters),0)
-        return render_template('dot_read.html',graph= code_dot.replace('\"','\\\"').replace('\r','').replace('\n','').replace('digraph{','').replace('}',''),master=masters)
+        return render_template('dot_read.html',
+    graph= code_dot.replace('\"','\\\"').replace('\r','').replace('\n','').replace('digraph{','').replace('}',''),
+                master=masters,
+                files_names=list(map(lambda x:'codes/'+x[0],codes))
+                )
     else:
-        print(os.getcwd()+'/'+masters)
-        if os.exists():
-            append_init=0
-        else:
-            append_init=1
+        masters='/'.join(masters.split('/')[1:])
+        append_init=not os.path.exists(os.getcwd()+'/'+masters)
         with open(os.getcwd()+'/'+masters,'a') as f:
             if append_init:
-                print('{}',file=File,end='')
+                print('{}',file=f,end='')
             print(request.form)
             Form=list((map(request.form.getlist,('name[]',
                 'file[]','args[]'
                 ))))
             print('------------')
             print(Form)
-            for name,File, args in zip(*Form):
-                print('|{\n',name,':',"Node('File':{File},'args':{args})".format(
+
+            for name,File, (args) in zip(*Form):
+                args= eval(args)
+                print('+{\n\'',name,'\':',"Node(File='{File}',args={args})".format(
                     File=File,args=args,name=name
                     )
                         ,'}',sep='',file=f,end='')
@@ -197,7 +202,7 @@ def newmaster():
         i+=1
 
     f = open(os.path.join(os.getcwd(),'masters',file,), 'a')
-    print('acumulative_dict()',file=f)
+    print('acumulative_dict()',file=f,end='')
     f.close(
             )
     return redirect('/reload')

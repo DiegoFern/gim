@@ -4,7 +4,7 @@ import hashlib,time,os,subprocess,datetime
 def union(*dicts):
     return dict(itertools.chain.from_iterable(dct.items() for dct in dicts))
 
-class acumulative_dict:
+class acumulative_dict(dict):
     def __add__(self,other):
         self.update(other)
         return self

@@ -1,4 +1,4 @@
-{
+acumulative_dict({
     
     
    
@@ -35,4 +35,5 @@
            'fib_7.xls':Node(File='codes/to_excel.py',inputs=['7'],
                stdout=False
                ),
- }
+ })+{
+'8':Node(File='codes/sum.py',args=[])}
