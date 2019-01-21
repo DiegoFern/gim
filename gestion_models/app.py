@@ -137,15 +137,15 @@ def createdot(masters):
                 print('{}',file=f,end='')
             print(request.form)
             Form=list((map(request.form.getlist,('name[]',
-                'file[]','args[]'
+                'file[]','args[]','parents[]'
                 ))))
             print('------------')
             print(Form)
 
-            for name,File, (args) in zip(*Form):
+            for name,File, (args),(parents) in zip(*Form):
                 args= eval(args)
-                print('+{\n\'',name,'\':',"Node(File='{File}',args={args})".format(
-                    File=File,args=args,name=name
+                print('+{\n\'',name,'\':',"Node(File='{File}',args={args},inputs={parents})".format(
+                    File=File,args=args,name=name,parents=parents
                     )
                         ,'}',sep='',file=f,end='')
 

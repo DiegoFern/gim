@@ -10,6 +10,9 @@
   <body>
     <button onclick="create_node()">Create_node</button>
     <button onclick="updateGraphOnline()">submit graph</button>
+    <div>
+        <a ref='/rename'>back to general</a>
+    </div>
     <div id=''>
         <form>
             File:<select id='file' > </select>
@@ -87,7 +90,7 @@
         var args = document.getElementById("args").value;
         _create_node(eval(parents),
                     file,
-                    name,
+                    (name),
                     eval(args));
         Parents.push(parents);
         File.push(file);
@@ -95,7 +98,7 @@
         Args.push(args);
         update_graph(); 
 
-        };   update_graph(); 
+        };
 
     function updateGraphOnline(){
         $.post("{{master}}",
@@ -105,8 +108,8 @@
                  name: Name
                 }
                 );   
-      
     }
+        update_graph();  
     
     </script>
 </html>
