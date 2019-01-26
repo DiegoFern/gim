@@ -1,4 +1,8 @@
-from utils import *
+try:
+    from utils import *
+except:
+    from .utils import *
+
 from pprint import pprint
 class dict_rec(dict):
     def __getitem__(self,b):

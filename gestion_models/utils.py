@@ -1,4 +1,4 @@
-import itertools,re
+import itertools,re,pickle
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
 def union(*dicts):
@@ -49,9 +49,9 @@ def eval_query(con=None,query=None,out=None,master=None):
         raise Exception('Failed query')
     return {'query':(query),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
 
-class Node:
+class Node(object):
     def __init__(self,File='',inputs=[],args=[],doc='',
-            stdout=True,txt=False,
+            stdout=True,txt=False,md5=None,
             **kargs):
         #if stdout=True its supossed that the command of the file
         #has as output the last args (py imp1...imp_M a.py arg1 arg2 ...argn output
@@ -63,13 +63,13 @@ class Node:
         self.args=args
         self.inputs=inputs
         self.inputs_names=inputs[:]
-        self.md5=None
+        self.md5=md5
         self.md5file=None
         self.children_names=None
     def __repr__(self):
         return ('Node(**%s)'%self.__dict__)
     def update_inputs(self,header) :
-        self.inputs=[header+'.'+i for i in self.inputs]
+        self.inputs=[header+'.'+str(i) for i in self.inputs]
         self.inputs_names=self.inputs[:]
 
     def getdot(self,name):
@@ -157,6 +157,42 @@ class Node:
 
     def track_savefile(self,g):
         return '{}|{}'.format(self.File,g)
+
+class Node_function(Node):
+    def __init__(self,File='',inputs=[],args=[],doc='',
+            stdout=True,txt=False,md5=None,
+            name=None,fun=None,master='.',
+            **kargs):
+        #if stdout=True its supossed that the command of the file
+        #has as output the last args (py imp1...imp_M a.py arg1 arg2 ...argn output
+        # in the other
+        self.File=File
+        self.txt=txt
+        self.doc=doc
+        self.stdout=stdout
+        self.args=args
+        self.inputs=inputs
+        self.inputs_names=inputs[:]
+        self.md5=md5
+        self.md5file=None
+        self.children_names=None
+        self.node=name
+        self.master='.'
+        self.fun=fun
+        self.name=name
+
+    def calculate(self):
+        if os.path.isfile('.data/%s'%self.md5):
+            return pickle.load(open('.data/%s'%self.md5,'rb')) 
+        else:
+            for i in self.inputs:
+                i.calculate()
+            #scape_unix=str if os.name == 'nt' else "'{}'".format
+            out=self.fun(*(self.args+tuple((i.calculate())
+                for i in self.inputs)))
+            with open('.data/%s'%self.md5,'wb') as f: 
+                pickle.dump(out,f)
+            return str(out)
 
 class NodeR(Node):
     CMD="Rscript"
