@@ -1,4 +1,4 @@
-import itertools,re,pickle
+import itertools,re,pickle,inspect
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
 def union(*dicts):
@@ -157,6 +157,8 @@ class Node(object):
 
     def track_savefile(self,g):
         return '{}|{}'.format(self.File,g)
+def md5_func(f):
+    return hashlib.sha224(inspect.getsource(f).encode('utf-8')).hexdigest()
 
 class Node_function(Node):
     def __init__(self,File='',inputs=[],args=[],doc='',
@@ -181,18 +183,29 @@ class Node_function(Node):
         self.fun=fun
         self.name=name
 
+    def getmd5s(self):
+        if self.md5 is  None:
+            self.md5='Out_%s'%((hashlib.sha224(str((md5_func(self.fun),
+                str(tuple(map(lambda x:x.getmd5s(),self.inputs))),
+                str(tuple(map(str,self.args)))
+                )
+                
+                ).encode('utf-8'))).hexdigest())
+        return (self.md5)
+
     def calculate(self):
-        if os.path.isfile('.data/%s'%self.md5):
-            return pickle.load(open('.data/%s'%self.md5,'rb')) 
+        pkl='.pkl'
+        if os.path.isfile('.data/%s'%self.md5+pkl):
+            return pickle.load(open('.data/%s'%self.md5+pkl,'rb')) 
         else:
             for i in self.inputs:
                 i.calculate()
             #scape_unix=str if os.name == 'nt' else "'{}'".format
             out=self.fun(*(self.args+tuple((i.calculate())
                 for i in self.inputs)))
-            with open('.data/%s'%self.md5,'wb') as f: 
+            with open('.data/%s'%self.md5+pkl,'wb') as f: 
                 pickle.dump(out,f)
-            return str(out)
+            return (out)
 
 class NodeR(Node):
     CMD="Rscript"

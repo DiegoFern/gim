@@ -1,4 +1,4 @@
-import re,os
+import re,os,hashlib,inspect
 from .utils import Node_function
 import functools
 class gim(dict):
@@ -58,20 +58,17 @@ class _Master:
         
     def __call__(self,name,*args):
         I=len(args)
-        print(args)
         for i,a in enumerate(args):
-            print(type(a),i)
             if not (type(a)==Node_function):
                 I=i
                 break
-        print(I)
         n=Node_function(File=name
                 ,inputs=tuple((i for i in args[:I])),args=args[I:],
-        node=name,
-        master='.',
-        fun=self.f,
-        name=name,
-      md5=str(hash((self.f.__hash__,args))))
+                node=name,
+                master='.',
+                fun=self.f,
+                name=name,)
+        n.getmd5s()
         gim[n.name]=n
         return n
 

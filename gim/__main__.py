@@ -321,9 +321,9 @@ def main(lista,dot,init,all_c,import_commit_,server,cat,quiet,log,commit_,Master
         for i in lista:
             if print_name:
                 print('==============>{}<==============='.format(i))
-            try:
+            if i.endswith('.pkl'):
                 print(pickle.load(open(i,'rb')))
-            except:
+            else:
                 print(open(i,'r').read(),end='')
         return 
     if init:

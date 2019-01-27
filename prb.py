@@ -1,14 +1,14 @@
-import gestion_models
+import gim
 
-@gestion_models._Master
+@gim._Master
 def ins(a):
     return a
 
 
-@gestion_models._Master
+@gim._Master
 def next_fib(a,b):
     return a+b
-@gestion_models._Master
+@gim._Master
 def to_str(x):
     return str(x)
 
