@@ -72,5 +72,3 @@ class _Master:
         gim[n.name]=n
         return n
 
-def Master(name):
-    return functools.partial(_Master,name)
