@@ -259,9 +259,9 @@ def get_dot(out,format_dot,inp,browser,target
     if browser:
         os.system('google-chrome {}'.format(out2))
 
-def run_server():
-    from app import run
-    run()
+def run_server(server):
+    from app_2 import run
+    run(server)
 def parse(argv):
     from optparse import OptionParser
     usageStr = """
@@ -276,7 +276,7 @@ def parse(argv):
                 'the program will draw only the needed nodes. The command -f select the format ')
             )
 
-    parser.add_option('-s','--server',action='store_true',default=False,
+    parser.add_option('-s','--server',type=str,default=None,
             help='put server up'
             )
 
@@ -333,8 +333,8 @@ def main(lista,dot,init,all_c,import_commit_,server,cat,quiet,log,commit_,Master
         os.system('mkdir codes')
         os.system('mkdir .calculating')
         return
-    if server:
-        run_server()
+    if server is not None:
+        run_server(server)
     if to_commit_:
         to_commit(to_commit_,output)
         return  
