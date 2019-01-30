@@ -183,6 +183,18 @@ class Node_function(Node):
         self.fun=fun
         self.name=name
 
+    def getdot(self,name):
+        color='red'
+        if os.path.isfile('.data/'+self.md5):
+            color='green'
+        if os.path.isfile('.calculating/'+self.md5):
+            color='yellow'
+        s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" ref=/calc/{name} fillcolor = {color} style=filled]'.format(
+                md5=self.md5,file=g(self.File),
+                name=g(name),args=g(repr(self.args)),color=color)
+        return s
+ 
+
     def getmd5s(self):
         if self.md5 is  None:
             self.md5='Out_%s'%((hashlib.sha224(str((md5_func(self.fun),

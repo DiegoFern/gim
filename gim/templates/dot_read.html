@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Viz.js</title>
+    <script src="/static/node_modules/viz.js/viz.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <button onclick="create_node()">Create_node</button>
+    <button onclick="updateGraphOnline()">submit graph</button>
+    <div>
+        <a ref='/rename'>back to general</a>
+    </div>
+    <div id=''>
+        <form>
+            File:<select id='file' > </select>
+        </form>
+        <form >
+            Name node:<input id='name' type="text" name="Parents" value= '[]'></input>
+
+        </form>
+            <BR>
+            <form >
+            Parents (list)<input id='parents' type="text" name="Parents" value= '[]'></input>
+        </form>
+            <BR>
+            <form >
+            Args (list)<input id='args' type="text" name="Args" value= '[]'> </input>
+        </form>
+    </div>
+    
+    <div id="graph">
+    </div>
+  </body>
+
+    <script>
+    var files_names={{files_names|safe}};
+    document.querySelector("#file").innerHTML= files_names.map(x => `<option value=\"${x}\">${x}</option>`).join('\n')
+    var graph ="{{graph|safe}}".split(';');
+    graph.pop();
+    var Parents=[];
+    var File=[];
+    var Name=[];
+    var Args=[];
+    var to_update =[];
+    function update_graph(){
+        if (graph.length>0){
+        document.querySelector("#graph").innerHTML = Viz('digraph{'+graph.join('; ')+';}', "svg");
+        };
+    };
+
+    var _create_node=function (parents,
+                    file,
+                    name,
+                    args
+
+            ){
+        graph.push(`\"${name}\"[label=\"node=${name} \n file=${file}\nfileOut=0\n\\\[${args}\\\]\" fillcolor = red href=\"${file}\" style=filled ]`);
+        for (var i in parents){
+            graph.push(`\"${parents[i]}\"->\"${name}\"`);
+        };
+        return graph;
+        update_graph();
+    };        
+        
+    //function create_node(){
+    //    var parents = prompt("parents of node", "");
+    //    
+    //    var file = prompt("File", "/codes/");
+    //    var name = prompt("name of node", "Harry Potter");
+    //    var args = prompt("list of args", "");
+    //    _create_node(eval(parents),
+    //                file,
+    //                name,
+    //                eval(args));
+    //    Parents.push(parents);
+    //    File.push(file);
+    //    Name.push(name);
+    //    Args.push(args);
+    //    update_graph(); 
+
+    //    };    
+    function create_node(){
+        var parents = document.getElementById("parents").value;
+        
+        var file = document.getElementById("file").value;
+        var name = document.getElementById("name").value; 
+        var args = document.getElementById("args").value;
+        _create_node(eval(parents),
+                    file,
+                    (name),
+                    eval(args));
+        Parents.push(parents);
+        File.push(file);
+        Name.push(name);
+        Args.push(args);
+        update_graph(); 
+
+        };
+
+    function updateGraphOnline(){
+        $.post("{{master}}",
+                {parents:Parents,
+                 file:File,
+                 args: Args,
+                 name: Name
+                }
+                );   
+    }
+        update_graph();  
+    
+    </script>
+</html>
+

@@ -25,7 +25,9 @@ class gim(dict):
         try:
             out=open(out,'w')
         except:
-            pass
+            import tempfile
+            out=[]
+            print=lambda x,**args:out.append(x)
         f=out
         g=re.escape
 
@@ -41,6 +43,7 @@ class gim(dict):
             f.close()
         except:
             pass
+            return '\n'.join(f)
         if format_dot!='dot':
             (os.system(' '.join(
             ['dot','-T'+format_dot,'/tmp/temp_dot']+(

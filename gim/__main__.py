@@ -335,6 +335,7 @@ def main(lista,dot,init,all_c,import_commit_,server,cat,quiet,log,commit_,Master
         return
     if server is not None:
         run_server(server)
+        return 
     if to_commit_:
         to_commit(to_commit_,output)
         return  
