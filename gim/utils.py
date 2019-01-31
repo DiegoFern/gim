@@ -171,6 +171,7 @@ class Node_function(Node):
         # in the other
         self.File=File
         self.txt=txt
+        assert type_save in ('.csv','.txt','.pkl')
         self.type_save=type_save
         self.doc=doc
         self.stdout=stdout
@@ -187,9 +188,9 @@ class Node_function(Node):
 
     def getdot(self,name):
         color='red'
-        if os.path.isfile('.data/'+self.md5):
+        if os.path.isfile('.data/'+self.md5+self.type_save):
             color='green'
-        if os.path.isfile('.calculating/'+self.md5):
+        if os.path.isfile('.calculating/'+self.md5+self.type_save):
             color='yellow'
         s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" ref=/calc/{name} fillcolor = {color} style=filled]'.format(
                 md5=self.md5,file=g(self.File),
@@ -210,7 +211,15 @@ class Node_function(Node):
     def calculate(self):
         
         if os.path.isfile('.data/%s'%self.md5+self.type_save):
-            return pickle.load(open('.data/%s'%self.md5+self.type_save,'rb')) 
+            if self.type_save=='.pkl':
+                return pickle.load(open('.data/%s'%self.md5+self.type_save,'rb')) 
+            elif self.type_save=='.csv':
+                import pandas as pd
+                return pd.read_csv(os.path.isfile('.data/%s'%self.md5+self.type_save))
+
+            else:
+                return open(os.path.isfile('.data/%s'%self.md5+self.type_save),'r').read()
+
         else:
             for i in self.inputs:
                 i.calculate()
@@ -218,16 +227,17 @@ class Node_function(Node):
             out=self.fun(*(self.args+tuple((i.calculate())
                 for i in self.inputs)))
             if self.type_save=='.pkl'
-                with open('.data/%s'%self.md5+self.type_save,'wb') as f: 
+                with open('.calculating/%s'%self.md5+self.type_save,'wb') as f: 
                     pickle.dump(out,f)
             elif self.type_save=='csv':
-                with open('.data/%s'%self.md5+self.type_save,'wb') as f:   
+                with open('.calculating/%s'%self.md5+self.type_save,'wb') as f:   
                     import pandas as pd
                     assert type(out)==pd.DataFrame,'out must be dataframe'
                     out.to_csv(f)
             else:
-                with open('.data/%s'%self.md5+self.type_save,'wb') as f:   
+                with open('.calculating/%s'%self.md5+self.type_save,'wb') as f:   
                     print(out,file=f)
+            os.move('.calculating/%s'%self.md5+self.type_save,'.data/%s'%self.md5+self.type_save)
             return (out)
 
 class NodeR(Node):
