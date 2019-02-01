@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Viz.js</title>
+    <script src="/static/node_modules/viz.js/viz.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    </div>
+    
+    <div id="graph">
+    </div>
+  </body>
+
+    <script>
+    var graph =`{{graph.replace('\n',';\\\n')|safe}}`.split(';');
+    graph.pop();
+    graph.shift();
+    
+    function update_graph(){
+        if (graph.length>0){
+        document.querySelector("#graph").innerHTML = Viz('digraph{'+graph.join('; ')+';}', "svg");
+        };
+    };
+
+    
+        update_graph();  
+    
+    </script>
+</html>
+

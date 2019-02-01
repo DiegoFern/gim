@@ -20,14 +20,14 @@ def run(server):
     g=__import__(server.split('.')[0])
 
     s=g.gim.gim
-    dot=s.get_dot(format_dot='dot')
     print('-------------------------')
     print(dot)
     app.run()
 
 @app.route('/',methods =['GET','POST'] )
 def index():
-    return (dot
+    dot=s.get_dot(format_dot='dot')
+    return render_template('dot_read_2.html',graph=dot
             )
 
 @app.route('/calc/<node>')
