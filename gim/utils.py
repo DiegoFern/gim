@@ -189,15 +189,9 @@ class Node_function(Node):
     def getdot(self,name):
         color='red'
         print(self.md5)
-        if os.path.isfile('.data/'+self.md5+'.pkl'):
-
-            color='green'
-        if os.path.isfile('.calculating/'+self.md5+'.pkl'):
-=======
         if os.path.isfile('.data/'+self.md5+self.type_save):
             color='green'
         if os.path.isfile('.calculating/'+self.md5+self.type_save):
->>>>>>> 755e939d2ecf061f1f5dc75ae8c47f237a9667c0
             color='yellow'
         s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" href=\"/calc/{name}\" fillcolor = {color} style=filled]'.format(
                 md5=self.md5,file=g(self.File),
