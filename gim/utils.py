@@ -164,12 +164,15 @@ class Node_function(Node):
     def __init__(self,File='',inputs=[],args=[],doc='',
             stdout=True,txt=False,md5=None,
             name=None,fun=None,master='.',
+            type_save='.pkl',
             **kargs):
         #if stdout=True its supossed that the command of the file
         #has as output the last args (py imp1...imp_M a.py arg1 arg2 ...argn output
         # in the other
         self.File=File
         self.txt=txt
+        assert type_save in ('.csv','.txt','.pkl')
+        self.type_save=type_save
         self.doc=doc
         self.stdout=stdout
         self.args=args
@@ -190,6 +193,11 @@ class Node_function(Node):
 
             color='green'
         if os.path.isfile('.calculating/'+self.md5+'.pkl'):
+=======
+        if os.path.isfile('.data/'+self.md5+self.type_save):
+            color='green'
+        if os.path.isfile('.calculating/'+self.md5+self.type_save):
+>>>>>>> 755e939d2ecf061f1f5dc75ae8c47f237a9667c0
             color='yellow'
         s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" href=\"/calc/{name}\" fillcolor = {color} style=filled]'.format(
                 md5=self.md5,file=g(self.File),
@@ -208,17 +216,35 @@ class Node_function(Node):
         return (self.md5)
 
     def calculate(self):
-        pkl='.pkl'
-        if os.path.isfile('.data/%s'%self.md5+pkl):
-            return pickle.load(open('.data/%s'%self.md5+pkl,'rb')) 
+        
+        if os.path.isfile('.data/%s'%self.md5+self.type_save):
+            if self.type_save=='.pkl':
+                return pickle.load(open('.data/%s'%self.md5+self.type_save,'rb')) 
+            elif self.type_save=='.csv':
+                import pandas as pd
+                return pd.read_csv(os.path.isfile('.data/%s'%self.md5+self.type_save))
+
+            else:
+                return open(os.path.isfile('.data/%s'%self.md5+self.type_save),'r').read()
+
         else:
             for i in self.inputs:
                 i.calculate()
             #scape_unix=str if os.name == 'nt' else "'{}'".format
             out=self.fun(*(self.args+tuple((i.calculate())
                 for i in self.inputs)))
-            with open('.data/%s'%self.md5+pkl,'wb') as f: 
-                pickle.dump(out,f)
+            if self.type_save=='.pkl'
+                with open('.calculating/%s'%self.md5+self.type_save,'wb') as f: 
+                    pickle.dump(out,f)
+            elif self.type_save=='csv':
+                with open('.calculating/%s'%self.md5+self.type_save,'wb') as f:   
+                    import pandas as pd
+                    assert type(out)==pd.DataFrame,'out must be dataframe'
+                    out.to_csv(f)
+            else:
+                with open('.calculating/%s'%self.md5+self.type_save,'wb') as f:   
+                    print(out,file=f)
+            os.move('.calculating/%s'%self.md5+self.type_save,'.data/%s'%self.md5+self.type_save)
             return (out)
 
 class NodeR(Node):
