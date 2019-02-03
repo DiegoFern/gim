@@ -18,11 +18,20 @@ def eval_(x,Node=None,master=None,out=None,):
     os.rename(out.replace('.data','.calculating',),out,)
     return {'cmd':(x),'deltha_time':format(t2-t1),'Node':Node,'master':master,'time':datetime.datetime.now()}
 
-def md5(fname):
+def md5(fname,file=1):
+    '''
+    if file:
+        return md5sum of the file fname
+    else
+        return md5sum of the text fname
+    '''
     hash_md5 = hashlib.md5()
-    with open(fname, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
+    if file:
+        with open(fname, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+    else:
+        hash_md5.update(fname.encode('utf-8'))
     return hash_md5.hexdigest()
     hash_md5 = subprocess.check_output(['md5sum', fname]).split()[0]
     return (hash_md5)
@@ -150,7 +159,6 @@ class Node(object):
 
                 CMD=self.CMD
                 ),
-                
                 self.node,self.master,'.data/%s'%self.md5),file=FILENOTES)
     def save_file(self,path):
         eval_('cp {} {}'.format(self.File,path))
@@ -185,7 +193,24 @@ class Node_function(Node):
         self.master='.'
         self.fun=fun
         self.name=name
-
+    
+    def save(self):
+        import inspect,marshal
+        if not os.path.isfile('.files/'+self.getmd5s()):
+            function =inspect.getsource(self.fun) 
+            ans = {'name':self.name,
+                    'function':md5(function,0),
+              'args':self.args,
+              'inputs':tuple(map(lambda x:x.getmd5s(),self.inputs))
+                }
+            if not os.path.isfile('.files/'+ans['function']):
+                
+                marshal.dump(self.fun.__code__,open('.files/'+ans['function']+'.func','wb'))
+            with open(('.files/'+self.getmd5s())+'.pkl','wb') as f:
+                pickle.dump(ans,f)
+            for i in self.inputs:
+                i.save()
+        
     def getdot(self,name):
         color='red'
         print(self.md5)
@@ -208,15 +233,16 @@ class Node_function(Node):
                 
                 ).encode('utf-8'))).hexdigest())
         return (self.md5)
+    
+    
 
     def calculate(self):
-        
         if os.path.isfile('.data/%s'%self.md5+self.type_save):
             if self.type_save=='.pkl':
                 return pickle.load(open('.data/%s'%self.md5+self.type_save,'rb')) 
             elif self.type_save=='.csv':
                 import pandas as pd
-                return pd.read_csv(os.path.isfile('.data/%s'%self.md5+self.type_save))
+                return pd.read_csv(('.data/%s'%self.md5+self.type_save),index_col=False)
 
             else:
                 return open(os.path.isfile('.data/%s'%self.md5+self.type_save),'r').read()
@@ -227,18 +253,18 @@ class Node_function(Node):
             #scape_unix=str if os.name == 'nt' else "'{}'".format
             out=self.fun(*(self.args+tuple((i.calculate())
                 for i in self.inputs)))
-            if self.type_save=='.pkl'
+            if self.type_save=='.pkl':
                 with open('.calculating/%s'%self.md5+self.type_save,'wb') as f: 
                     pickle.dump(out,f)
-            elif self.type_save=='csv':
-                with open('.calculating/%s'%self.md5+self.type_save,'wb') as f:   
-                    import pandas as pd
-                    assert type(out)==pd.DataFrame,'out must be dataframe'
-                    out.to_csv(f)
+            elif self.type_save=='.csv':
+                f='.calculating/%s'%self.md5+self.type_save
+                import pandas as pd
+                assert type(out)==pd.DataFrame,'out must be dataframe non a %s'%type(out)
+                out.to_csv(f,index=None)
             else:
                 with open('.calculating/%s'%self.md5+self.type_save,'wb') as f:   
                     print(out,file=f)
-            os.move('.calculating/%s'%self.md5+self.type_save,'.data/%s'%self.md5+self.type_save)
+            os.rename('.calculating/%s'%self.md5+self.type_save,'.data/%s'%self.md5+self.type_save)
             return (out)
 
 class NodeR(Node):

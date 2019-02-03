@@ -316,13 +316,18 @@ def parse(argv):
 
 def main(lista,dot,init,all_c,import_commit_,server,cat,quiet,log,commit_,Master,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log,md5):
     if cat:
-        import pickle
         print_name=len(lista)>1
+        from pprint import pprint
         for i in lista:
             if print_name:
-                print('==============>{}<==============='.format(i))
+                print('#==============>{}<==============='.format(i))
             if i.endswith('.pkl'):
-                print(pickle.load(open(i,'rb')))
+                import pickle
+                pprint(pickle.load(open(i,'rb')))
+            elif i.endswith('.func'):
+                import marshal,types
+                print(inspect.getsource(types.FunctionType(
+                    marshal.load(open(i,'rb')),{})))
             else:
                 print(open(i,'r').read(),end='')
         return 

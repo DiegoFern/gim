@@ -59,7 +59,7 @@ class _Master:
     def __init__(self,f):
         self.f=f
         
-    def __call__(self,name,*args):
+    def __call__(self,name,*args,type_save='.pkl'):
         I=len(args)
         for i,a in enumerate(args):
             if not (type(a)==Node_function):
@@ -70,7 +70,8 @@ class _Master:
                 node=name,
                 master='.',
                 fun=self.f,
-                name=name,)
+                name=name,
+                type_save=type_save)
         n.getmd5s()
         gim[n.name]=n
         return n
