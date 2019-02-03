@@ -32,5 +32,5 @@ def index():
 
 @app.route('/calc/<node>')
 def calc(node):
-    return str(s[node].calculate())
+    return '<pre><code> {}</code></pre>'.format((s[node].calculate()))
 
