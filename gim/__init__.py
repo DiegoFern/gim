@@ -1,6 +1,7 @@
 import re,os,hashlib,inspect
 from .utils import Node_function
 import functools
+from itertools import chain
 class gim(dict):
 
     def __init__(self,
@@ -21,24 +22,22 @@ class gim(dict):
             D={i:D[i] for i in D[target].get_children_names(target,D)}
         for d in D.values():
             d.getmd5s()
+        print_=print
         import sys
         try:
             out=open(out,'w')
         except:
             import tempfile
             out=[]
-            print=lambda x,**args:out.append(x)
+            print_=lambda x,**args:out.append(x)
         f=out
         g=re.escape
-
-        print('digraph{',file=f)
-        if target:
-            D={i:D[i] for i in D[target].get_children_names(target,D)}
+        print_('digraph{',file=f)
         for k,v in D.items():
-            print(v.getdot(k).strip(),file=f)
+            print_(v.getdot(k).strip(),file=f)
             for l in v.inputs_names:
-                print('"{}"->"{}"'.format(g(l.File),g(k)),file=f)
-        print('}',file=f)
+                print_('"{}"->"{}"'.format(g(l.md5),g(v.md5)),file=f)
+        print_('}',file=f)
         try:
             f.close()
         except:
@@ -59,20 +58,20 @@ class _Master:
     def __init__(self,f):
         self.f=f
         
-    def __call__(self,name,*args,type_save='.pkl'):
-        I=len(args)
-        for i,a in enumerate(args):
-            if not (type(a)==Node_function):
-                I=i
-                break
+    def __call__(self,name,*args,type_save='.pkl',**kargs):
+        #I=len(args)
+        #for i,a in enumerate(args):
+        #    if not (type(a)==Node_function):
+        #        I=i
+        #        break
         n=Node_function(File=name
-                ,inputs=tuple((i for i in args[:I])),args=args[I:],
+                ,args=args,keyargs=kargs,
                 node=name,
                 master='.',
                 fun=self.f,
                 name=name,
                 type_save=type_save)
         n.getmd5s()
-        gim[n.name]=n
+        gim[n.md5]=n
         return n
 
