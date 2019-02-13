@@ -1,3 +1,4 @@
+from itertools import chain
 import itertools,re,pickle,inspect
 FILENOTES=open('.log','a')
 import hashlib,time,os,subprocess,datetime
@@ -76,7 +77,7 @@ class Node(object):
         self.md5file=None
         self.children_names=None
     def __repr__(self):
-        return ('Node(**%s)'%self.__dict__)
+        return ('Node(**{})'.format(self.__dict__))
     def update_inputs(self,header) :
         self.inputs=[header+'.'+str(i) for i in self.inputs]
         self.inputs_names=self.inputs[:]
@@ -169,7 +170,7 @@ def md5_func(f):
     return hashlib.sha224(inspect.getsource(f).encode('utf-8')).hexdigest()
 
 class Node_function(Node):
-    def __init__(self,File='',inputs=[],args=[],doc='',
+    def __init__(self,File='',inputs=[],relative_pos=[],keyargs={},args=[],doc='',
             stdout=True,txt=False,md5=None,
             name=None,fun=None,master='.',
             type_save='.pkl',
@@ -178,14 +179,18 @@ class Node_function(Node):
         #has as output the last args (py imp1...imp_M a.py arg1 arg2 ...argn output
         # in the other
         self.File=File
+        self.kargs=keyargs
         self.txt=txt
         assert type_save in ('.csv','.txt','.pkl')
         self.type_save=type_save
         self.doc=doc
         self.stdout=stdout
         self.args=args
-        self.inputs=inputs
-        self.inputs_names=inputs[:]
+        self.relative_pos=relative_pos
+        self.inputs=list(filter(lambda x:type(x)==Node_function, 
+                                chain(self.args,self.kargs.values())))
+        print(self.inputs)
+        self.inputs_names=self.inputs[:]
         self.md5=md5
         self.md5file=None
         self.children_names=None
@@ -193,7 +198,8 @@ class Node_function(Node):
         self.master='.'
         self.fun=fun
         self.name=name
-    
+    def __repr__(self):
+        return 'Node(*%s*)'%self.File
     def save(self):
         import inspect,marshal
         if not os.path.isfile('.files/'+self.getmd5s()):
@@ -213,13 +219,12 @@ class Node_function(Node):
         
     def getdot(self,name):
         color='red'
-        print(self.md5)
         if os.path.isfile('.data/'+self.md5+self.type_save):
             color='green'
         if os.path.isfile('.calculating/'+self.md5+self.type_save):
             color='yellow'
-        s='\n"{name}"[label=" node={name}\\nfile={file} \\nfileOut={md5} \\n{args}" href=\"/calc/{name}\" fillcolor = {color} style=filled]'.format(
-                md5=self.md5,file=g(self.File),
+        s='\n"{md5}"[label=" node={file} \\nfileOut={md5} \\n{args}\\n{keyargs}" href=\"/calc/{name}\" fillcolor = {color} style=filled]'.format(
+                md5=self.md5,file=g(self.File),keyargs=self.kargs,
                 name=g(name),args=g(repr(self.args)),color=color)
         return s
  
@@ -251,8 +256,10 @@ class Node_function(Node):
             for i in self.inputs:
                 i.calculate()
             #scape_unix=str if os.name == 'nt' else "'{}'".format
-            out=self.fun(*(self.args+tuple((i.calculate())
-                for i in self.inputs)))
+            args=tuple(i.calculate() if type(i)==Node_function else i for i in self.args)
+            ka={a:(b.calculate() if type(b)==Node_function else b) for a,b in self.kargs.items()}
+            out=self.fun(*args, **ka
+                    )
             if self.type_save=='.pkl':
                 with open('.calculating/%s'%self.md5+self.type_save,'wb') as f: 
                     pickle.dump(out,f)
