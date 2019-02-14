@@ -201,6 +201,7 @@ class Node_function(Node):
     def __repr__(self):
         return 'Node(*%s*)'%self.File
     def save(self):
+        return 
         import inspect,marshal
         if not os.path.isfile('.files/'+self.getmd5s()):
             function =inspect.getsource(self.fun) 
@@ -210,10 +211,10 @@ class Node_function(Node):
               'inputs':tuple(map(lambda x:x.getmd5s(),self.inputs))
                 }
             if not os.path.isfile('.files/'+ans['function']):
-                
-                marshal.dump(self.fun.__code__,open('.files/'+ans['function']+'.func','wb'))
-            with open(('.files/'+self.getmd5s())+'.pkl','wb') as f:
-                pickle.dump(ans,f)
+                marshal.dump(
+                        {'code':inspect.getsource(self.fun),
+                        'fun':self.fun.__code__},
+                        open('.files/'+ans['function']+'.func','wb'))
             for i in self.inputs:
                 i.save()
         
@@ -255,6 +256,7 @@ class Node_function(Node):
         else:
             for i in self.inputs:
                 i.calculate()
+            self.save()
             #scape_unix=str if os.name == 'nt' else "'{}'".format
             args=tuple(i.calculate() if type(i)==Node_function else i for i in self.args)
             ka={a:(b.calculate() if type(b)==Node_function else b) for a,b in self.kargs.items()}

@@ -296,6 +296,8 @@ def parse(argv):
     parser.add_option('-o','--output',dest='output',type=str,
             help='ouput file, if default will be stdout'
             )
+    parser.add_option('--exec','-e',dest='execute',type=str,default=None,
+            help='execute .func')
     parser.add_option('-q','--quiet',dest='quiet',action='store_true',default=False,
             help='avoid the standart outputs')
     parser.add_option('-f','--format_dot',dest='format_dot',type=str,default='dot')
@@ -314,7 +316,7 @@ def parse(argv):
             help='output the log ')
     return parser.parse_args(argv)
 
-def main(lista,dot,init,all_c,import_commit_,server,cat,quiet,log,commit_,Master,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log,md5):
+def main(lista,execute,dot,init,all_c,import_commit_,server,cat,quiet,log,commit_,Master,to_commit_,doc,target,master,output,format_dot,_get_dir,browser,import_computes_,_read_log,md5):
     if cat:
         print_name=len(lista)>1
         from pprint import pprint
@@ -326,8 +328,7 @@ def main(lista,dot,init,all_c,import_commit_,server,cat,quiet,log,commit_,Master
                 pprint(pickle.load(open(i,'rb')))
             elif i.endswith('.func'):
                 import marshal,types
-                print(inspect.getsource(types.FunctionType(
-                    marshal.load(open(i,'rb')),{})))
+                print(marshal.load(open(i,'rb'))['code'])
             else:
                 print(open(i,'r').read(),end='')
         return 
@@ -392,14 +393,40 @@ def main(lista,dot,init,all_c,import_commit_,server,cat,quiet,log,commit_,Master
 if __name__=='__main__':
     import os
     args,lista=(parse(sys.argv))
-    kargs={'quiet':args.quiet,
-            'output':args.output,'target':args.target,'_read_log':args.read_log,
-            'dot':args.dot,'all_c':args.all_c,'_get_dir':args._get_dir,'import_commit_':args.import_commit,
-            'browser':args.browser,'master':args.master,
-            'format_dot':args.format_dot,'commit_':args.commit,'init':args.init ,'to_commit_':args.to_commit_,'doc':args.doc,
-            'import_computes_':args.import_computes,'log':args.log,
-            'Master':args.Master,'server':args.server,
+    kargs={
+            'quiet':args.quiet,
+            'output':args.output,
+            'target':args.target,
+            '_read_log':args.read_log,
+            'dot':args.dot,
+            'all_c':args.all_c,
+            '_get_dir':args._get_dir,
+            'import_commit_':args.import_commit,
+            'browser':args.browser,
+            'master':args.master,
+            'format_dot':args.format_dot,
+            'commit_':args.commit,
+            'init':args.init ,
+            'to_commit_':args.to_commit_,
+            'doc':args.doc,
+            'import_computes_':args.import_computes,
+            'log':args.log,
+            'Master':args.Master,
+            'server':args.server,
             'md5':args.md5,
-            'cat':args.cat
+            'cat':args.cat,
+            'execute':args.execute
             }
-    main(lista[1:],**kargs)
+    if kargs['execute'] is not None:
+        import marshal,types
+        def eval_try(x):
+            try:
+                return eval(x)
+            except:
+                return x
+        print(lista)
+        f=types.FunctionType(marshal.load(open(kargs['execute'],'rb'))['fun'],{})
+        args=tuple(map( eval_try,lista[1:]))
+        print(f(*args))
+    else:
+        main(lista[1:],**kargs)
