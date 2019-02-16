@@ -53,7 +53,7 @@ class gim(dict):
 
  
 gim=gim()
-class _Master:
+class _Master(object):
 
     def __init__(self,f):
         self.f=f
@@ -75,3 +75,11 @@ class _Master:
         gim[n.md5]=n
         return n
 
+class _Master_selfname(_Master):
+    def __call__(self,*args,type_save='.pkl',**kargs):
+        _Master.__call__(self.f.__name__,*args,type_save='.pkl',**kargs)
+
+
+@_Master
+def concatenate(name,*nodes):
+    return
